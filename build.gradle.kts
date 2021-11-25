@@ -18,6 +18,15 @@ java {
 	targetCompatibility = JavaVersion.VERSION_11
 }
 
+allOpen {
+	annotation("javax.persistence.Entity")
+	annotation("javax.persistence.MappedSuperclass")
+	annotation("javax.persistence.Embeddable")
+}
+noArg {
+	annotation("javax.persistence.Entity")
+}
+
 repositories {
 	mavenCentral()
 }
