@@ -13,7 +13,7 @@ class MenuController(
 ) {
 
     @GetMapping
-    fun getMenus(): List<MenuDto> {
+    fun getMenuList(): List<MenuDto> {
         return menuService.getMenuList()
     }
 }

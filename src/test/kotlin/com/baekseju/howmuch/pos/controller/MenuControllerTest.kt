@@ -56,8 +56,10 @@ internal class MenuControllerTest(){
 
     @Test
     fun getMenuList(){
+        //given
         given(menuService.getMenuList()).willReturn(menus)
 
+        //when, then
         mockMvc.perform(get("/api/menus"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].id").value("1"))
