@@ -5,8 +5,8 @@ import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
 class SoftDeleteEntity(
-    createdAt: LocalDateTime,
-    updatedAt: LocalDateTime,
+    createdAt: LocalDateTime?,
+    updatedAt: LocalDateTime?,
     var deleteAt: LocalDateTime?,
 ) : BaseTimeEntity(createdAt, updatedAt) {
     fun softDelete(){

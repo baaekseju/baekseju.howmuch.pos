@@ -7,8 +7,8 @@ import javax.persistence.PreUpdate
 
 @MappedSuperclass
 class BaseTimeEntity(
-    var createdAt: LocalDateTime,
-    var updatedAt: LocalDateTime
+    var createdAt: LocalDateTime?,
+    var updatedAt: LocalDateTime?
 ){
     @PrePersist
     fun prePersist() {
