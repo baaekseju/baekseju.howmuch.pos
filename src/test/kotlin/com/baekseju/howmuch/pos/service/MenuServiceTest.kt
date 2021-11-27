@@ -15,11 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
+import java.util.*
+import kotlin.collections.ArrayList
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("dev")
-internal class MenuServiceTest() {
+internal class MenuServiceTest {
 
     @Autowired
     private lateinit var menuService: MenuService
@@ -79,10 +81,24 @@ internal class MenuServiceTest() {
     }
 
     @Test
+    fun getExistMenuDetail(){
+        //given
+        val id = 1
+        given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
+        
+        //when
+        val menuDetail = menuService.getMenuDetail(id)
+
+        //then
+        then(menuRepository).should().findById(id)
+        assertThat(menuDetail.id).isEqualTo(id)
+    }
+
+    @Test
     fun addMenu(){
         //given
         val id = 1
-        given(menuRepository.save(any())).will { it ->
+        given(menuRepository.save(any())).will {
             val menu: Menu = it.getArgument(0)
             Menu(
                 id = id,

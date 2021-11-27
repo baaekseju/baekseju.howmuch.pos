@@ -5,8 +5,7 @@ import com.baekseju.howmuch.pos.service.MenuService
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.then
+import org.mockito.BDDMockito.*
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -16,14 +15,13 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
 
 @WebMvcTest(MenuController::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("dev")
-internal class MenuControllerTest(){
+internal class MenuControllerTest{
     @Autowired
     private lateinit var mockMvc: MockMvc
     @MockBean
@@ -81,10 +79,24 @@ internal class MenuControllerTest(){
     }
 
     @Test
+    fun getExistedMenuDetail(){
+        //given
+        val id = 1
+        given(menuService.getMenuDetail(id)).willReturn(menus[0])
+
+        //when, then
+        mockMvc.perform(get("/api/menus/$id"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value("$id"))
+
+        then(menuService).should().getMenuDetail(id)
+    }
+
+    @Test
     fun postMenu(){
         //given
         val id = 1
-        given(menuService.addMenu(any())).will { it ->
+        given(menuService.addMenu(any())).will {
             val menuDto : MenuDto = it.getArgument(0)
             MenuDto(
                 id = id,

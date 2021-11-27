@@ -2,9 +2,8 @@ package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.service.MenuService
-import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import java.net.URI
 
 @RestController
 @RequestMapping("/api/menus")
@@ -17,10 +16,14 @@ class MenuController(
         return menuService.getMenuList()
     }
 
+    @GetMapping("/{menuId}")
+    fun getMenuDetail(@PathVariable menuId : Int): MenuDto{
+        return menuService.getMenuDetail(menuId)
+    }
+
     @PostMapping
-    fun addMenu(@RequestBody menu: MenuDto): ResponseEntity<MenuDto> {
-        val menuDto = menuService.addMenu(menu)
-        val uri = URI("/api/menus/" + menuDto.id);
-        return ResponseEntity.created(uri).body(menuDto)
+    @ResponseStatus(HttpStatus.CREATED)
+    fun addMenu(@RequestBody menu: MenuDto): MenuDto {
+        return menuService.addMenu(menu)
     }
 }

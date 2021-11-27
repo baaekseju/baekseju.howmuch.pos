@@ -8,12 +8,11 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import java.time.LocalDateTime
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("dev")
-internal class MenuRepositoryTest() {
+internal class MenuRepositoryTest {
     @Autowired
     private lateinit var menuRepository: MenuRepository
 
@@ -72,7 +71,7 @@ internal class MenuRepositoryTest() {
 
         //then
         assertThat(createdMenu.id).isNotNull
-        assertThat(createdMenu.createdAt).isNotNull()
-        assertThat(createdMenu.updatedAt).isNotNull()
+        assertThat(createdMenu.createdAt).isNotNull
+        assertThat(createdMenu.updatedAt).isNotNull
     }
 }

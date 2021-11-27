@@ -15,4 +15,9 @@ class MenuService(val menuRepository: MenuRepository) {
         val menuEntity = menuRepository.save(menuDto.toEntity())
         return menuEntity.toDto()
     }
+
+    fun getMenuDetail(menuId: Int): MenuDto {
+        val menuEntity = menuRepository.findById(menuId).get()
+        return menuEntity.toDto()
+    }
 }
