@@ -75,7 +75,6 @@ internal class MenuServiceTest {
         val menuDtoList = menuService.getMenuList()
 
         //then
-        then(menuRepository).should().findAll()
         assertThat(menuDtoList.size).isEqualTo(2)
         assertThat(menuDtoList[0].name).isEqualTo("hamburger")
     }
@@ -85,12 +84,11 @@ internal class MenuServiceTest {
         //given
         val id = 1
         given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
-        
+
         //when
         val menuDetail = menuService.getMenuDetail(id)
 
         //then
-        then(menuRepository).should().findById(id)
         assertThat(menuDetail.id).isEqualTo(id)
     }
 
@@ -112,7 +110,7 @@ internal class MenuServiceTest {
                 updatedAt = LocalDateTime.now()
             )
         }
-        val menu = MenuDto(
+        val menuDtoMock = MenuDto(
             name = "hamburger",
             price = 5000,
             additionalPrice = 500,
@@ -122,9 +120,39 @@ internal class MenuServiceTest {
         )
 
         //when
-        val menuDto = menuService.addMenu(menu)
+        val menuDto = menuService.addMenu(menuDtoMock)
 
         //then
         assertThat(menuDto.id).isEqualTo(id)
+    }
+
+    @Test
+    fun updateExistMenu(){
+        //given
+        val id = 1
+        given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
+        val menuDtoMock = MenuDto(
+            name = "hamburger",
+            price = 10000,
+            additionalPrice = 1000,
+            categoryId = 100,
+            stock = 500,
+            hidden = false
+        )
+
+        //when
+        val menuDto = menuService.updateMenu(id, menuDtoMock)
+
+        //then
+        assertThat(menuDto.price).isEqualTo(10000)
+        assertThat(menuDto.additionalPrice).isEqualTo(1000)
+        assertThat(menuDto.categoryId).isEqualTo(100)
+        assertThat(menuDto.stock).isEqualTo(500)
+        assertThat(menuDto.hidden).isFalse
+    }
+
+    @Test
+    fun updateNotExistMenu(){
+
     }
 }

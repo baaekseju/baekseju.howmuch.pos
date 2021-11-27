@@ -17,7 +17,7 @@ class MenuController(
     }
 
     @GetMapping("/{menuId}")
-    fun getMenuDetail(@PathVariable menuId : Int): MenuDto{
+    fun getMenuDetail(@PathVariable menuId: Int): MenuDto{
         return menuService.getMenuDetail(menuId)
     }
 
@@ -25,5 +25,11 @@ class MenuController(
     @ResponseStatus(HttpStatus.CREATED)
     fun addMenu(@RequestBody menu: MenuDto): MenuDto {
         return menuService.addMenu(menu)
+    }
+
+    @PutMapping("/{menuId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun putMenu(@PathVariable menuId: Int, @RequestBody menu: MenuDto): MenuDto{
+        return menuService.updateMenu(menuId, menu)
     }
 }

@@ -22,6 +22,15 @@ class Menu(
     updatedAt: LocalDateTime? = null,
     deletedAt: LocalDateTime? = null
 ): SoftDeleteEntity(createdAt, updatedAt, deletedAt){
+    fun updateMenu(menuDto: MenuDto){
+        name = menuDto.name
+        price = menuDto.price
+        additionalPrice = menuDto.additionalPrice
+        categoryId = menuDto.categoryId
+        stock = menuDto.stock
+        hidden = menuDto.hidden
+    }
+
     fun toDto(): MenuDto {
         return MenuDto(
             id = id,

@@ -5,6 +5,7 @@ import com.baekseju.howmuch.pos.service.MenuService
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.*
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,8 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
 
@@ -121,6 +121,18 @@ internal class MenuControllerTest{
             .andExpect(jsonPath("$.name").value("hamburger"))
 
         then(menuService).should().addMenu(any())
+    }
+
+    @Test
+    fun putExistMenu(){
+        val id = 1
+        mockMvc.perform(
+            put("/api/menus/$id")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"hamburger\", \"price\": 10000, \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
+            .andExpect(status().isCreated)
+
+        then(menuService).should().updateMenu(eq(id), any())
     }
 }
 
