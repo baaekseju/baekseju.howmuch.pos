@@ -34,8 +34,7 @@ class MenuController(
     }
 
     @DeleteMapping("/{menuId}")
-    fun deleteMenu(@PathVariable menuId: Int): String{
-        menuService.softDeleteMenu(menuId)
-        return "{}"
+    fun deleteMenu(@PathVariable menuId: Int): MenuDto{
+        return menuService.softDeleteMenu(menuId)
     }
 }

@@ -98,7 +98,7 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun postMenu(){
+    fun postMenuWithValidData(){
         //given
         val id = 1
         given(menuService.addMenu(any())).will {
@@ -129,6 +129,11 @@ internal class MenuControllerTest{
     }
 
     @Test
+    fun postMenuWithInvalidData(){
+
+    }
+
+    @Test
     fun putExistMenu(){
         val id = 1
         mockMvc.perform(
@@ -142,6 +147,11 @@ internal class MenuControllerTest{
 
     @Test
     fun putNotExistMenu(){
+
+    }
+
+    @Test
+    fun putMenuWithInvalidData(){
 
     }
 

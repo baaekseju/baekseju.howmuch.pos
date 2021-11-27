@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 @Service
 class MenuService(val menuRepository: MenuRepository) {
     fun getMenuList(): List<MenuDto> {
-        val menuList = menuRepository.findAll()
+        val menuList = menuRepository.findAll().filter { menu -> menu.deleteAt == null && !menu.hidden }
         return menuList.map { menu -> menu.toDto() }
     }
 

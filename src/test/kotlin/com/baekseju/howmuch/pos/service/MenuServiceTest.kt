@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.then
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -62,6 +61,18 @@ internal class MenuServiceTest {
             stock = 999,
             hidden = false,
             createdAt = LocalDateTime.now(),
+            updatedAt = LocalDateTime.now(),
+            deletedAt = LocalDateTime.now()
+        ))
+        menuList.add(Menu(
+            id = 3,
+            name = "wing",
+            price = 6000,
+            additionalPrice = 2000,
+            categoryId = 102,
+            stock = 10,
+            hidden = true,
+            createdAt = LocalDateTime.now(),
             updatedAt = LocalDateTime.now()
         ))
     }
@@ -75,7 +86,7 @@ internal class MenuServiceTest {
         val menuDtoList = menuService.getMenuList()
 
         //then
-        assertThat(menuDtoList.size).isEqualTo(2)
+        assertThat(menuDtoList.size).isEqualTo(1)
         assertThat(menuDtoList[0].name).isEqualTo("hamburger")
     }
 
@@ -98,7 +109,17 @@ internal class MenuServiceTest {
     }
 
     @Test
-    fun addMenu(){
+    fun getSoftDeletedMenuDetail(){
+
+    }
+
+    @Test
+    fun getHiddenMenuDetail(){
+
+    }
+
+    @Test
+    fun addMenuWithValidData(){
         //given
         val id = 1
         given(menuRepository.save(any())).will {
@@ -162,12 +183,17 @@ internal class MenuServiceTest {
     }
 
     @Test
-    fun deleteMenu(){
+    fun deleteExistMenu(){
         val id = 1
         given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
 
         val menuDto = menuService.softDeleteMenu(id)
 
         assertThat(menuDto.deletedAt).isNotNull
+    }
+
+    @Test
+    fun deleteNotExistMenu(){
+
     }
 }
