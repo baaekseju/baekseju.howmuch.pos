@@ -27,4 +27,11 @@ class MenuService(val menuRepository: MenuRepository) {
         menuRepository.save(menuEntity)
         return menuEntity.toDto()
     }
+
+    fun softDeleteMenu(menuId: Int): MenuDto {
+        val menuEntity = menuRepository.findById(menuId).get()
+        menuEntity.softDelete()
+        menuRepository.save(menuEntity)
+        return menuEntity.toDto()
+    }
 }

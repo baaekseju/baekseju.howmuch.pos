@@ -93,6 +93,11 @@ internal class MenuServiceTest {
     }
 
     @Test
+    fun getNotExistMenuDetail(){
+
+    }
+
+    @Test
     fun addMenu(){
         //given
         val id = 1
@@ -154,5 +159,15 @@ internal class MenuServiceTest {
     @Test
     fun updateNotExistMenu(){
 
+    }
+
+    @Test
+    fun deleteMenu(){
+        val id = 1
+        given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
+
+        val menuDto = menuService.softDeleteMenu(id)
+
+        assertThat(menuDto.deletedAt).isNotNull
     }
 }

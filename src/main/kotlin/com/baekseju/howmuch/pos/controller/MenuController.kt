@@ -32,4 +32,10 @@ class MenuController(
     fun putMenu(@PathVariable menuId: Int, @RequestBody menu: MenuDto): MenuDto{
         return menuService.updateMenu(menuId, menu)
     }
+
+    @DeleteMapping("/{menuId}")
+    fun deleteMenu(@PathVariable menuId: Int): String{
+        menuService.softDeleteMenu(menuId)
+        return "{}"
+    }
 }

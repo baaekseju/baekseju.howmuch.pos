@@ -93,6 +93,11 @@ internal class MenuControllerTest{
     }
 
     @Test
+    fun getNotExistedMenuDetail(){
+
+    }
+
+    @Test
     fun postMenu(){
         //given
         val id = 1
@@ -133,6 +138,25 @@ internal class MenuControllerTest{
             .andExpect(status().isCreated)
 
         then(menuService).should().updateMenu(eq(id), any())
+    }
+
+    @Test
+    fun putNotExistMenu(){
+
+    }
+
+    @Test
+    fun deleteExistMenu(){
+        val id = 1
+        mockMvc.perform(delete("/api/menus/$id"))
+            .andExpect(status().isOk)
+
+        then(menuService).should().softDeleteMenu(id)
+    }
+
+    @Test
+    fun deleteNotExistMenu(){
+
     }
 }
 
