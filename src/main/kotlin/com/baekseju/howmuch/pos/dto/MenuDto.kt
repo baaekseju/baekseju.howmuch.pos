@@ -7,8 +7,8 @@ class MenuDto(
     val id: Int? = null,
     var name: String,
     var price: Int,
-    var additional_price: Int,
-    var category_id: Int,
+    var additionalPrice: Int,
+    var categoryId: Int,
     var stock: Int,
     var hidden: Boolean,
     createdAt: LocalDateTime? = null,
@@ -19,8 +19,8 @@ class MenuDto(
         return Menu(
             name = name,
             price = price,
-            additional_price = additional_price,
-            category_id = category_id,
+            additionalPrice = additionalPrice,
+            categoryId = additionalPrice,
             stock = stock,
             hidden = hidden
         )

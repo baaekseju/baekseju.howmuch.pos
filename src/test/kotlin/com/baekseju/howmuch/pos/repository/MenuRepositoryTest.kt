@@ -26,8 +26,8 @@ internal class MenuRepositoryTest() {
         menuRepository.save(Menu(
             name = "hamburger",
             price = 5000,
-            additional_price = 500,
-            category_id = 100,
+            additionalPrice = 500,
+            categoryId = 100,
             stock = 50,
             hidden = false
             )
@@ -35,8 +35,8 @@ internal class MenuRepositoryTest() {
         menuRepository.save(Menu(
             name = "cola",
             price = 1500,
-            additional_price = 0,
-            category_id = 103,
+            additionalPrice = 0,
+            categoryId = 103,
             stock = 999,
             hidden = false,
             deletedAt = null
@@ -53,5 +53,26 @@ internal class MenuRepositoryTest() {
         assertThat(menuList.size).isEqualTo(2)
         assertThat(menuList[0].name).isEqualTo("hamburger")
         assertThat(menuList[1].name).isEqualTo("cola")
+    }
+
+    @Test
+    fun save(){
+        //given
+        val menu = Menu(
+            name = "hamburger",
+            price = 5000,
+            additionalPrice = 500,
+            categoryId = 100,
+            stock = 50,
+            hidden = false
+        )
+
+        //when
+        val createdMenu = menuRepository.save(menu)
+
+        //then
+        assertThat(createdMenu.id).isNotNull
+        assertThat(createdMenu.createdAt).isNotNull()
+        assertThat(createdMenu.updatedAt).isNotNull()
     }
 }

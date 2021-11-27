@@ -10,4 +10,9 @@ class MenuService(val menuRepository: MenuRepository) {
         val menuList = menuRepository.findAll()
         return menuList.map { menu -> menu.toDto() }
     }
+
+    fun addMenu(menuDto: MenuDto): MenuDto {
+        val menuEntity = menuRepository.save(menuDto.toEntity())
+        return menuEntity.toDto()
+    }
 }

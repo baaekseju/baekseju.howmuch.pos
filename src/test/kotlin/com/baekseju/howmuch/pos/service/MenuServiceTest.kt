@@ -1,5 +1,6 @@
 package com.baekseju.howmuch.pos.service
 
+import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.entity.Menu
 import com.baekseju.howmuch.pos.repository.MenuRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.then
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -27,6 +29,11 @@ internal class MenuServiceTest() {
 
     val menuList = ArrayList<Menu>()
 
+    private fun <T> any(): T {
+        Mockito.any<T>()
+        return null as T
+    }
+
     @BeforeAll
     fun setup(){
         setMenu()
@@ -37,25 +44,23 @@ internal class MenuServiceTest() {
             id = 1,
             name = "hamburger",
             price = 5000,
-            additional_price = 500,
-            category_id = 100,
+            additionalPrice = 500,
+            categoryId = 100,
             stock = 50,
             hidden = false,
             createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
-            deletedAt = null
+            updatedAt = LocalDateTime.now()
         ))
         menuList.add(Menu(
             id = 2,
             name = "cola",
             price = 1500,
-            additional_price = 0,
-            category_id = 103,
+            additionalPrice = 0,
+            categoryId = 103,
             stock = 999,
             hidden = false,
             createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
-            deletedAt = null
+            updatedAt = LocalDateTime.now()
         ))
     }
 
@@ -71,5 +76,39 @@ internal class MenuServiceTest() {
         then(menuRepository).should().findAll()
         assertThat(menuDtoList.size).isEqualTo(2)
         assertThat(menuDtoList[0].name).isEqualTo("hamburger")
+    }
+
+    @Test
+    fun addMenu(){
+        //given
+        val id = 1
+        given(menuRepository.save(any())).will { it ->
+            val menu: Menu = it.getArgument(0)
+            Menu(
+                id = id,
+                name = menu.name,
+                price = menu.price,
+                additionalPrice = menu.additionalPrice,
+                categoryId = menu.categoryId,
+                stock = menu.stock,
+                hidden = menu.hidden,
+                createdAt = LocalDateTime.now(),
+                updatedAt = LocalDateTime.now()
+            )
+        }
+        val menu = MenuDto(
+            name = "hamburger",
+            price = 5000,
+            additionalPrice = 500,
+            categoryId = 100,
+            stock = 50,
+            hidden = false
+        )
+
+        //when
+        val menuDto = menuService.addMenu(menu)
+
+        //then
+        assertThat(menuDto.id).isEqualTo(id)
     }
 }
