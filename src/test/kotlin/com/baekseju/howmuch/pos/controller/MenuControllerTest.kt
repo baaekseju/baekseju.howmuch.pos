@@ -2,6 +2,7 @@ package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.service.MenuService
+import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -16,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import java.time.LocalDateTime
 
 @WebMvcTest(MenuController::class)
@@ -28,8 +30,7 @@ internal class MenuControllerTest{
     private lateinit var menuService: MenuService
 
     private fun <T> any(): T {
-        Mockito.any<T>()
-        return null as T
+        return Mockito.any<T>()
     }
 
     private val menus = ArrayList<MenuDto>()
@@ -72,8 +73,17 @@ internal class MenuControllerTest{
         //when, then
         mockMvc.perform(get("/api/menus"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$[0].id").value("1"))
-            .andExpect(jsonPath("$[1].id").value("2"))
+            .andExpect(jsonPath("$", hasSize<Array<Any>>(2)))
+            .andExpect(jsonPath("$[0].id").exists())
+            .andExpect(jsonPath("$[0].name").exists())
+            .andExpect(jsonPath("$[0].price").exists())
+            .andExpect(jsonPath("$[0].additionalPrice").exists())
+            .andExpect(jsonPath("$[0].stock").exists())
+            .andExpect(jsonPath("$[0].categoryId").doesNotExist())
+            .andExpect(jsonPath("$[0].hidden").doesNotExist())
+            .andExpect(jsonPath("$[0].createdAt").doesNotExist())
+            .andExpect(jsonPath("$[0].updatedAt").doesNotExist())
+            .andExpect(jsonPath("$[0].deletedAt").doesNotExist())
 
         then(menuService).should().getMenuList()
     }
@@ -88,6 +98,15 @@ internal class MenuControllerTest{
         mockMvc.perform(get("/api/menus/$id"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value("$id"))
+            .andExpect(jsonPath("$.name").exists())
+            .andExpect(jsonPath("$.price").exists())
+            .andExpect(jsonPath("$.additionalPrice").exists())
+            .andExpect(jsonPath("$.stock").exists())
+            .andExpect(jsonPath("$.categoryId").exists())
+            .andExpect(jsonPath("$.hidden").doesNotExist())
+            .andExpect(jsonPath("$.createdAt").exists())
+            .andExpect(jsonPath("$.updatedAt").exists())
+            .andExpect(jsonPath("$.deletedAt").doesNotExist())
 
         then(menuService).should().getMenuDetail(id)
     }
@@ -119,7 +138,7 @@ internal class MenuControllerTest{
         //when, then
         mockMvc.perform(
             post("/api/menus")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType  .APPLICATION_JSON)
                 .content("{\"name\":\"hamburger\", \"price\": 5000, \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(id))
@@ -141,6 +160,7 @@ internal class MenuControllerTest{
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"hamburger\", \"price\": 10000, \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
             .andExpect(status().isCreated)
+            .andDo(print())
 
         then(menuService).should().updateMenu(eq(id), any())
     }
@@ -158,6 +178,7 @@ internal class MenuControllerTest{
     @Test
     fun deleteExistMenu(){
         val id = 1
+
         mockMvc.perform(delete("/api/menus/$id"))
             .andExpect(status().isOk)
 
