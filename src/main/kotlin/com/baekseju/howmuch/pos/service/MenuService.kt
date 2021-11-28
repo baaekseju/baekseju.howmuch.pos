@@ -7,17 +7,17 @@ import org.springframework.stereotype.Service
 @Service
 class MenuService(val menuRepository: MenuRepository) {
     fun getMenuList(): List<MenuDto> {
-        val menuList = menuRepository.findAll().filter { menu -> menu.deleteAt == null && !menu.hidden }
+        val menuList = menuRepository.findAllByHiddenIsFalseAndDeleteAtIsNull()
         return menuList.map { menu -> menu.toDto() }
+    }
+
+    fun getMenuDetail(menuId: Int): MenuDto {
+        val menuEntity = menuRepository.findByIdAndHiddenIsFalseAndDeleteAtIsNull(menuId).get()
+        return menuEntity.toDto()
     }
 
     fun addMenu(menuDto: MenuDto): MenuDto {
         val menuEntity = menuRepository.save(menuDto.toEntity())
-        return menuEntity.toDto()
-    }
-
-    fun getMenuDetail(menuId: Int): MenuDto {
-        val menuEntity = menuRepository.findById(menuId).get()
         return menuEntity.toDto()
     }
 

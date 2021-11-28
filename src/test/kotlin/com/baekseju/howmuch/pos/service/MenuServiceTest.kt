@@ -4,7 +4,7 @@ import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.entity.Menu
 import com.baekseju.howmuch.pos.repository.MenuRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.mockito.BDDMockito.given
@@ -18,7 +18,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("dev")
 internal class MenuServiceTest {
 
@@ -31,11 +30,10 @@ internal class MenuServiceTest {
     val menuList = ArrayList<Menu>()
 
     private fun <T> any(): T {
-        Mockito.any<T>()
-        return null as T
+        return Mockito.any<T>()
     }
 
-    @BeforeAll
+    @BeforeEach
     fun setup(){
         setMenu()
     }
@@ -80,7 +78,9 @@ internal class MenuServiceTest {
     @Test
     fun getMenus(){
         //given
-        given(menuRepository.findAll()).willReturn(menuList)
+        given(menuRepository.findAllByHiddenIsFalseAndDeleteAtIsNull()).willReturn(
+            menuList.filter { menu -> !menu.hidden && menu.deleteAt == null }
+        )
 
         //when
         val menuDtoList = menuService.getMenuList()
@@ -94,7 +94,9 @@ internal class MenuServiceTest {
     fun getExistMenuDetail(){
         //given
         val id = 1
-        given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
+        given(menuRepository.findByIdAndHiddenIsFalseAndDeleteAtIsNull(id)).willReturn(
+            Optional.of(menuList.first { menu -> menu.id == id && !menu.hidden && menu.deleteAt == null })
+        )
 
         //when
         val menuDetail = menuService.getMenuDetail(id)
