@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
@@ -47,8 +48,8 @@ internal class MenuServiceTest {
             categoryId = 100,
             stock = 50,
             hidden = false,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now()
+            createdAt = Instant.now(),
+            updatedAt = Instant.now()
         ))
         menuList.add(Menu(
             id = 2,
@@ -58,9 +59,9 @@ internal class MenuServiceTest {
             categoryId = 103,
             stock = 999,
             hidden = false,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
-            deletedAt = LocalDateTime.now()
+            createdAt = Instant.now(),
+            updatedAt = Instant.now(),
+            deletedAt = Instant.now()
         ))
         menuList.add(Menu(
             id = 3,
@@ -70,8 +71,8 @@ internal class MenuServiceTest {
             categoryId = 102,
             stock = 10,
             hidden = true,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now()
+            createdAt = Instant.now(),
+            updatedAt = Instant.now()
         ))
     }
 
@@ -134,8 +135,8 @@ internal class MenuServiceTest {
                 categoryId = menu.categoryId,
                 stock = menu.stock,
                 hidden = menu.hidden,
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
             )
         }
         val menuDtoMock = MenuDto(

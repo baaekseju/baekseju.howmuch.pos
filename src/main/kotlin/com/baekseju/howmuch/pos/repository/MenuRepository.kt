@@ -8,6 +8,4 @@ interface MenuRepository : JpaRepository<Menu, Int> {
     fun findAllByHiddenIsFalseAndDeleteAtIsNull(): List<Menu>
 
     fun findByIdAndHiddenIsFalseAndDeleteAtIsNull(id: Int): Optional<Menu>
-
-
 }

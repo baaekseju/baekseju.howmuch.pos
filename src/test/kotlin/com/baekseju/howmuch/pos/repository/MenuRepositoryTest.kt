@@ -74,4 +74,26 @@ internal class MenuRepositoryTest {
         assertThat(createdMenu.createdAt).isNotNull
         assertThat(createdMenu.updatedAt).isNotNull
     }
+
+    @Test
+    fun update(){
+        //given
+        val menu = Menu(
+            name = "hamburger",
+            price = 5000,
+            additionalPrice = 500,
+            categoryId = 100,
+            stock = 50,
+            hidden = false
+        )
+        val createdMenu = menuRepository.save(menu)
+
+        // when
+        createdMenu.name = "cola"
+        val updatedMenu = menuRepository.save(createdMenu)
+
+        //then
+        assertThat(updatedMenu.name).isEqualTo("cola")
+        assertThat(updatedMenu.updatedAt).isNotEqualTo(createdMenu.updatedAt)
+    }
 }
