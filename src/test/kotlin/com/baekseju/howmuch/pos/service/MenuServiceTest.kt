@@ -6,7 +6,6 @@ import com.baekseju.howmuch.pos.repository.MenuRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -31,7 +29,7 @@ internal class MenuServiceTest {
     val menuList = ArrayList<Menu>()
 
     private fun <T> any(): T {
-        return Mockito.any<T>()
+        return Mockito.any()
     }
 
     @BeforeEach
@@ -79,8 +77,8 @@ internal class MenuServiceTest {
     @Test
     fun getMenus(){
         //given
-        given(menuRepository.findAllByHiddenIsFalseAndDeleteAtIsNull()).willReturn(
-            menuList.filter { menu -> !menu.hidden && menu.deleteAt == null }
+        given(menuRepository.findAllByHiddenIsFalseAndDeletedAtIsNull()).willReturn(
+            menuList.filter { menu -> !menu.hidden && menu.deletedAt == null }
         )
 
         //when
@@ -95,8 +93,8 @@ internal class MenuServiceTest {
     fun getExistMenuDetail(){
         //given
         val id = 1
-        given(menuRepository.findByIdAndHiddenIsFalseAndDeleteAtIsNull(id)).willReturn(
-            Optional.of(menuList.first { menu -> menu.id == id && !menu.hidden && menu.deleteAt == null })
+        given(menuRepository.findByIdAndHiddenIsFalseAndDeletedAtIsNull(id)).willReturn(
+            Optional.of(menuList.first { menu -> menu.id == id && !menu.hidden && menu.deletedAt == null })
         )
 
         //when
@@ -186,13 +184,23 @@ internal class MenuServiceTest {
     }
 
     @Test
-    fun deleteExistMenu(){
+    fun softDeleteMenu(){
         val id = 1
         given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
 
-        val menuDto = menuService.softDeleteMenu(id)
+        val result = menuService.deleteMenu(id, false)
 
-        assertThat(menuDto.deletedAt).isNotNull
+        assertThat(result).isEqualTo("soft delete success")
+    }
+
+    @Test
+    fun forceDeleteMenu(){
+        val id = 1
+        given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
+
+        val result = menuService.deleteMenu(id, true)
+
+        assertThat(result).isEqualTo("force delete success")
     }
 
     @Test

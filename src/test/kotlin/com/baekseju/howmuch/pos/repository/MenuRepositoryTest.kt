@@ -2,26 +2,25 @@ package com.baekseju.howmuch.pos.repository
 
 import com.baekseju.howmuch.pos.entity.Menu
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("dev")
 internal class MenuRepositoryTest {
     @Autowired
     private lateinit var menuRepository: MenuRepository
 
-    @BeforeAll
-    fun setup(){
-        setMenu()
+    @AfterEach
+    fun initDB(){
+        menuRepository.deleteAll()
     }
 
-    private fun setMenu(){
+    @Test
+    fun findAll(){
         menuRepository.save(Menu(
             name = "hamburger",
             price = 5000,
@@ -29,7 +28,7 @@ internal class MenuRepositoryTest {
             categoryId = 100,
             stock = 50,
             hidden = false
-            )
+        )
         )
         menuRepository.save(Menu(
             name = "cola",
@@ -39,12 +38,9 @@ internal class MenuRepositoryTest {
             stock = 999,
             hidden = false,
             deletedAt = null
-            )
         )
-    }
+        )
 
-    @Test
-    fun findAll(){
         //when
         val menuList = menuRepository.findAll()
 
@@ -95,5 +91,52 @@ internal class MenuRepositoryTest {
         //then
         assertThat(updatedMenu.name).isEqualTo("cola")
         assertThat(updatedMenu.updatedAt).isNotEqualTo(createdMenu.updatedAt)
+    }
+
+    @Test
+    fun softDelete(){
+        //given
+        val menu = Menu(
+            name = "hamburger",
+            price = 5000,
+            additionalPrice = 500,
+            categoryId = 100,
+            stock = 50,
+            hidden = false
+        )
+        val savedMenu = menuRepository.save(menu)
+        val id = savedMenu.id !!
+
+        //when
+        savedMenu.softDelete()
+        menuRepository.save(savedMenu)
+
+        //then
+        val softDeletedMenu = menuRepository.findById(id)
+        assertThat(softDeletedMenu.isPresent).isTrue
+        assertThat(softDeletedMenu.get().deletedAt).isNotNull
+    }
+
+    @Test
+    fun forceDelete(){
+        //given
+        val menu = Menu(
+            name = "hamburger",
+            price = 5000,
+            additionalPrice = 500,
+            categoryId = 100,
+            stock = 50,
+            hidden = false
+        )
+        val savedMenu = menuRepository.save(menu)
+        val id = savedMenu.id !!
+
+        //when
+        menuRepository.delete(savedMenu)
+
+        //then
+        val softDeletedMenu = menuRepository.findById(id)
+        assertThat(softDeletedMenu.isEmpty).isTrue
+
     }
 }

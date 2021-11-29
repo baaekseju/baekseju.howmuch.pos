@@ -138,7 +138,7 @@ internal class MenuControllerTest{
         //when, then
         mockMvc.perform(
             post("/api/menus")
-                .contentType(MediaType  .APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"hamburger\", \"price\": 5000, \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(id))
@@ -176,13 +176,23 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun deleteExistMenu(){
+    fun softDeleteMenu(){
         val id = 1
 
         mockMvc.perform(delete("/api/menus/$id"))
             .andExpect(status().isOk)
 
-        then(menuService).should().softDeleteMenu(id)
+        then(menuService).should().deleteMenu(id, false)
+    }
+
+    @Test
+    fun forceDeleteMenu(){
+        val id = 1
+
+        mockMvc.perform(delete("/api/menus/$id?force=true"))
+            .andExpect(status().isOk)
+
+        then(menuService).should().deleteMenu(id, true)
     }
 
     @Test

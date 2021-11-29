@@ -33,19 +33,4 @@ class Menu(
         stock = menuDto.stock
         hidden = menuDto.hidden
     }
-
-    fun toDto(): MenuDto {
-        return MenuDto(
-            id = id,
-            name = name,
-            price = price,
-            additionalPrice = additionalPrice,
-            categoryId = categoryId,
-            stock = stock,
-            hidden = hidden,
-            createdAt = createdAt,
-            updatedAt = updatedAt,
-            deletedAt = deleteAt
-        )
-    }
 }

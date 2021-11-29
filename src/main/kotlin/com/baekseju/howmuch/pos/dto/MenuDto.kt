@@ -23,15 +23,4 @@ class MenuDto(
     @JsonView(MenuJsonView.Detail::class)
     updatedAt: Instant? = null,
     var deletedAt: Instant? = null
-): BaseDto(createdAt, updatedAt) {
-    fun toEntity(): Menu {
-        return Menu(
-            name = name,
-            price = price,
-            additionalPrice = additionalPrice,
-            categoryId = additionalPrice,
-            stock = stock,
-            hidden = hidden
-        )
-    }
-}
+): BaseDto(createdAt, updatedAt)
