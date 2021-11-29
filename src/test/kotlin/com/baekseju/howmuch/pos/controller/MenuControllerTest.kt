@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import java.time.LocalDateTime
+import java.time.Instant
 
 @WebMvcTest(MenuController::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -49,8 +49,8 @@ internal class MenuControllerTest{
             categoryId = 100,
             stock = 30,
             hidden = false,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now()
+            createdAt = Instant.now(),
+            updatedAt = Instant.now()
         ))
         menus.add(MenuDto(
             id = 2,
@@ -60,8 +60,8 @@ internal class MenuControllerTest{
             categoryId = 103,
             stock = 999,
             hidden = false,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now()
+            createdAt = Instant.now(),
+            updatedAt = Instant.now()
         ))
     }
 
@@ -130,8 +130,8 @@ internal class MenuControllerTest{
                 categoryId = menuDto.categoryId,
                 stock = menuDto.stock,
                 hidden = menuDto.hidden,
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
             )
         }
 
@@ -159,7 +159,7 @@ internal class MenuControllerTest{
             put("/api/menus/$id")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"hamburger\", \"price\": 10000, \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
-            .andExpect(status().isCreated)
+            .andExpect(status().isOk)
             .andDo(print())
 
         then(menuService).should().updateMenu(eq(id), any())

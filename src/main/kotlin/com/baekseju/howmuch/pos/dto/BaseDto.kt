@@ -1,8 +1,8 @@
 package com.baekseju.howmuch.pos.dto
 
-import java.time.LocalDateTime
+import java.time.Instant
 
 open class BaseDto(
-    val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?
+    val createdAt: Instant?,
+    val updatedAt: Instant?
 )

@@ -2,7 +2,7 @@ package com.baekseju.howmuch.pos.dto
 
 import com.baekseju.howmuch.pos.entity.Menu
 import com.fasterxml.jackson.annotation.JsonView
-import java.time.LocalDateTime
+import java.time.Instant
 
 class MenuDto(
     @JsonView(MenuJsonView.Simple::class)
@@ -19,10 +19,10 @@ class MenuDto(
     var stock: Int,
     var hidden: Boolean,
     @JsonView(MenuJsonView.Detail::class)
-    createdAt: LocalDateTime? = null,
+    createdAt: Instant? = null,
     @JsonView(MenuJsonView.Detail::class)
-    updatedAt: LocalDateTime? = null,
-    var deletedAt: LocalDateTime? = null
+    updatedAt: Instant? = null,
+    var deletedAt: Instant? = null
 ): BaseDto(createdAt, updatedAt) {
     fun toEntity(): Menu {
         return Menu(

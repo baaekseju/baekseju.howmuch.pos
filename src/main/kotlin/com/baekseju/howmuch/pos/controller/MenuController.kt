@@ -32,7 +32,6 @@ class MenuController(
     }
 
     @PutMapping("/{menuId}")
-    @ResponseStatus(HttpStatus.CREATED)
     fun putMenu(@PathVariable menuId: Int, @RequestBody menu: MenuDto): MenuDto{
         return menuService.updateMenu(menuId, menu)
     }
