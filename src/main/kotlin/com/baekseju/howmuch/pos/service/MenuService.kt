@@ -10,7 +10,7 @@ class MenuService(val menuRepository: MenuRepository, val menuMapper: MenuMapper
 
     fun getMenuList(): List<MenuDto> {
         val menuList = menuRepository.findAllByHiddenIsFalseAndDeletedAtIsNull()
-        return menuList.map { menu -> menuMapper.menuEntityToDto(menu)}
+        return menuMapper.menuEntitiesToDtos(menuList)
     }
 
     fun getMenuDetail(menuId: Int): MenuDto {
