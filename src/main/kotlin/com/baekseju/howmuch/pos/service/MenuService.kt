@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service
 @Service
 class MenuService(val menuRepository: MenuRepository, val menuMapper: MenuMapper) {
 
-    fun getMenuList(): List<MenuDto> {
-        val menuList = menuRepository.findAllByHiddenIsFalseAndDeletedAtIsNull()
-        return menuMapper.menuEntitiesToDtos(menuList)
+    fun getMenus(): List<MenuDto> {
+        val menuEntities = menuRepository.findAllByHiddenIsFalseAndDeletedAtIsNull()
+        return menuMapper.menuEntitiesToDtos(menuEntities)
     }
 
     fun getMenuDetail(menuId: Int): MenuDto {

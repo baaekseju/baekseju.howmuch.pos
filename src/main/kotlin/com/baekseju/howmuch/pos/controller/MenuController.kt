@@ -15,8 +15,8 @@ class MenuController(
 
     @GetMapping
     @JsonView(MenuJsonView.Simple::class)
-    fun getMenuList(): List<MenuDto> {
-        return menuService.getMenuList()
+    fun getMenus(): List<MenuDto> {
+        return menuService.getMenus()
     }
 
     @GetMapping("/{menuId}")

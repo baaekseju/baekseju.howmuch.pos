@@ -26,7 +26,7 @@ internal class MenuServiceTest {
     @MockBean
     private lateinit var menuRepository: MenuRepository
 
-    val menuList = ArrayList<Menu>()
+    val menus = ArrayList<Menu>()
 
     private fun <T> any(): T {
         return Mockito.any()
@@ -38,7 +38,7 @@ internal class MenuServiceTest {
     }
 
     private fun setMenu(){
-        menuList.add(Menu(
+        menus.add(Menu(
             id = 1,
             name = "hamburger",
             price = 5000,
@@ -49,7 +49,7 @@ internal class MenuServiceTest {
             createdAt = Instant.now(),
             updatedAt = Instant.now()
         ))
-        menuList.add(Menu(
+        menus.add(Menu(
             id = 2,
             name = "cola",
             price = 1500,
@@ -61,7 +61,7 @@ internal class MenuServiceTest {
             updatedAt = Instant.now(),
             deletedAt = Instant.now()
         ))
-        menuList.add(Menu(
+        menus.add(Menu(
             id = 3,
             name = "wing",
             price = 6000,
@@ -78,15 +78,15 @@ internal class MenuServiceTest {
     fun getMenus(){
         //given
         given(menuRepository.findAllByHiddenIsFalseAndDeletedAtIsNull()).willReturn(
-            menuList.filter { menu -> !menu.hidden && menu.deletedAt == null }
+            menus.filter { menu -> !menu.hidden && menu.deletedAt == null }
         )
 
         //when
-        val menuDtoList = menuService.getMenuList()
+        val menuDtos = menuService.getMenus()
 
         //then
-        assertThat(menuDtoList.size).isEqualTo(1)
-        assertThat(menuDtoList[0].name).isEqualTo("hamburger")
+        assertThat(menuDtos.size).isEqualTo(1)
+        assertThat(menuDtos[0].name).isEqualTo("hamburger")
     }
 
     @Test
@@ -94,7 +94,7 @@ internal class MenuServiceTest {
         //given
         val id = 1
         given(menuRepository.findByIdAndHiddenIsFalseAndDeletedAtIsNull(id)).willReturn(
-            Optional.of(menuList.first { menu -> menu.id == id && !menu.hidden && menu.deletedAt == null })
+            Optional.of(menus.first { menu -> menu.id == id && !menu.hidden && menu.deletedAt == null })
         )
 
         //when
@@ -157,7 +157,7 @@ internal class MenuServiceTest {
     fun updateExistMenu(){
         //given
         val id = 1
-        given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
+        given(menuRepository.findById(id)).willReturn(Optional.of(menus[0]))
         val menuDtoMock = MenuDto(
             name = "hamburger",
             price = 10000,
@@ -186,7 +186,7 @@ internal class MenuServiceTest {
     @Test
     fun softDeleteMenu(){
         val id = 1
-        given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
+        given(menuRepository.findById(id)).willReturn(Optional.of(menus[0]))
 
         val result = menuService.deleteMenu(id, false)
 
@@ -196,7 +196,7 @@ internal class MenuServiceTest {
     @Test
     fun forceDeleteMenu(){
         val id = 1
-        given(menuRepository.findById(id)).willReturn(Optional.of(menuList[0]))
+        given(menuRepository.findById(id)).willReturn(Optional.of(menus[0]))
 
         val result = menuService.deleteMenu(id, true)
 

@@ -42,12 +42,12 @@ internal class MenuRepositoryTest {
         )
 
         //when
-        val menuList = menuRepository.findAll()
+        val menus = menuRepository.findAll()
 
         //then
-        assertThat(menuList.size).isEqualTo(2)
-        assertThat(menuList[0].name).isEqualTo("hamburger")
-        assertThat(menuList[1].name).isEqualTo("cola")
+        assertThat(menus.size).isEqualTo(2)
+        assertThat(menus[0].name).isEqualTo("hamburger")
+        assertThat(menus[1].name).isEqualTo("cola")
     }
 
     @Test
@@ -63,12 +63,12 @@ internal class MenuRepositoryTest {
         )
 
         //when
-        val createdMenu = menuRepository.save(menu)
+        val savedMenu = menuRepository.save(menu)
 
         //then
-        assertThat(createdMenu.id).isNotNull
-        assertThat(createdMenu.createdAt).isNotNull
-        assertThat(createdMenu.updatedAt).isNotNull
+        assertThat(savedMenu.id).isNotNull
+        assertThat(savedMenu.createdAt).isNotNull
+        assertThat(savedMenu.updatedAt).isNotNull
     }
 
     @Test
@@ -82,15 +82,15 @@ internal class MenuRepositoryTest {
             stock = 50,
             hidden = false
         )
-        val createdMenu = menuRepository.save(menu)
+        val savedMenu = menuRepository.save(menu)
 
         // when
-        createdMenu.name = "cola"
-        val updatedMenu = menuRepository.save(createdMenu)
+        savedMenu.name = "cola"
+        val updatedMenu = menuRepository.save(savedMenu)
 
         //then
         assertThat(updatedMenu.name).isEqualTo("cola")
-        assertThat(updatedMenu.updatedAt).isNotEqualTo(createdMenu.updatedAt)
+        assertThat(updatedMenu.updatedAt).isNotEqualTo(savedMenu.updatedAt)
     }
 
     @Test

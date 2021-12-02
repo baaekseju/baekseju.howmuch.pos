@@ -66,9 +66,9 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun getMenuList(){
+    fun getMenus(){
         //given
-        given(menuService.getMenuList()).willReturn(menus)
+        given(menuService.getMenus()).willReturn(menus)
 
         //when, then
         mockMvc.perform(get("/api/menus"))
@@ -85,7 +85,7 @@ internal class MenuControllerTest{
             .andExpect(jsonPath("$[0].updatedAt").doesNotExist())
             .andExpect(jsonPath("$[0].deletedAt").doesNotExist())
 
-        then(menuService).should().getMenuList()
+        then(menuService).should().getMenus()
     }
 
     @Test
