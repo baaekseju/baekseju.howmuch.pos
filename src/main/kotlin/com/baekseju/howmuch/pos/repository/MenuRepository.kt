@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface MenuRepository : JpaRepository<Menu, Int> {
-    fun findAllByHiddenIsFalseAndDeletedAtIsNull(): List<Menu>
+    fun findAllByHiddenAndDeletedAtIsNull(hidden: Boolean): List<Menu>
 
-    fun findByIdAndHiddenIsFalseAndDeletedAtIsNull(id: Int): Optional<Menu>
+    fun findByIdAndHiddenAndDeletedAtIsNull(id: Int, hidden: Boolean): Optional<Menu>
 }

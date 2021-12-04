@@ -15,14 +15,14 @@ class MenuController(
 
     @GetMapping
     @JsonView(MenuJsonView.Simple::class)
-    fun getMenus(): List<MenuDto> {
-        return menuService.getMenus()
+    fun getMenus(@RequestParam(defaultValue = "false") hidden: Boolean): List<MenuDto> {
+        return menuService.getMenus(hidden)
     }
 
     @GetMapping("/{menuId}")
     @JsonView(MenuJsonView.Detail::class)
-    fun getMenuDetail(@PathVariable menuId: Int): MenuDto{
-        return menuService.getMenuDetail(menuId)
+    fun getMenuDetail(@PathVariable menuId: Int, @RequestParam(defaultValue = "false") hidden: Boolean): MenuDto{
+        return menuService.getMenuDetail(menuId, hidden)
     }
 
     @PostMapping

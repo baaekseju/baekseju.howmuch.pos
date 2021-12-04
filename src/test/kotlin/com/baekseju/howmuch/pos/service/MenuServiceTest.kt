@@ -77,12 +77,12 @@ internal class MenuServiceTest {
     @Test
     fun getMenus(){
         //given
-        given(menuRepository.findAllByHiddenIsFalseAndDeletedAtIsNull()).willReturn(
+        given(menuRepository.findAllByHiddenAndDeletedAtIsNull(false)).willReturn(
             menus.filter { menu -> !menu.hidden && menu.deletedAt == null }
         )
 
         //when
-        val menuDtos = menuService.getMenus()
+        val menuDtos = menuService.getMenus(false)
 
         //then
         assertThat(menuDtos.size).isEqualTo(1)
@@ -93,12 +93,12 @@ internal class MenuServiceTest {
     fun getExistMenuDetail(){
         //given
         val id = 1
-        given(menuRepository.findByIdAndHiddenIsFalseAndDeletedAtIsNull(id)).willReturn(
+        given(menuRepository.findByIdAndHiddenAndDeletedAtIsNull(id, false)).willReturn(
             Optional.of(menus.first { menu -> menu.id == id && !menu.hidden && menu.deletedAt == null })
         )
 
         //when
-        val menuDetail = menuService.getMenuDetail(id)
+        val menuDetail = menuService.getMenuDetail(id, false)
 
         //then
         assertThat(menuDetail.id).isEqualTo(id)
@@ -106,7 +106,9 @@ internal class MenuServiceTest {
 
     @Test
     fun getNotExistMenuDetail(){
+        val id = 999
 
+        val menuDetail = menuService.getMenuDetail(id, false)
     }
 
     @Test

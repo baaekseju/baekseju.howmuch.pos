@@ -17,6 +17,7 @@ class MenuDto(
     var categoryId: Int,
     @JsonView(MenuJsonView.Simple::class)
     var stock: Int,
+    @JsonView(MenuJsonView.Detail::class)
     var hidden: Boolean,
     @JsonView(MenuJsonView.Detail::class)
     createdAt: Instant? = null,
