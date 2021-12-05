@@ -3,7 +3,9 @@ package com.baekseju.howmuch.pos.service
 import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.mapper.MenuMapper
 import com.baekseju.howmuch.pos.repository.MenuRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import javax.persistence.EntityNotFoundException
 
 @Service
 class MenuService(val menuRepository: MenuRepository, val menuMapper: MenuMapper) {
@@ -14,7 +16,7 @@ class MenuService(val menuRepository: MenuRepository, val menuMapper: MenuMapper
     }
 
     fun getMenuDetail(menuId: Int, hidden: Boolean): MenuDto {
-        val menuEntity = menuRepository.findByIdAndHiddenAndDeletedAtIsNull(menuId, hidden).get()
+        val menuEntity = menuRepository.findByIdAndHiddenAndDeletedAtIsNull(menuId, hidden) ?: throw EntityNotFoundException()
         return menuMapper.menuEntityToDto(menuEntity)
     }
 
@@ -24,14 +26,14 @@ class MenuService(val menuRepository: MenuRepository, val menuMapper: MenuMapper
     }
 
     fun updateMenu(menuId: Int, menuDto: MenuDto): MenuDto {
-        val menuEntity = menuRepository.findById(menuId).get()
+        val menuEntity = menuRepository.findById(menuId).orElseThrow{EntityNotFoundException()}
         menuEntity.updateMenu(menuDto)
         menuRepository.save(menuEntity)
         return menuMapper.menuEntityToDto(menuEntity)
     }
 
     fun deleteMenu(menuId: Int, force: Boolean): String {
-        val menuEntity = menuRepository.findById(menuId).get()
+        val menuEntity = menuRepository.findById(menuId).orElseThrow{EntityNotFoundException()}
         return if (force) {
             menuRepository.delete(menuEntity)
             "force delete success"

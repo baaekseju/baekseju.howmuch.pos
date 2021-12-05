@@ -7,5 +7,5 @@ import java.util.*
 interface MenuRepository : JpaRepository<Menu, Int> {
     fun findAllByHiddenAndDeletedAtIsNull(hidden: Boolean): List<Menu>
 
-    fun findByIdAndHiddenAndDeletedAtIsNull(id: Int, hidden: Boolean): Optional<Menu>
+    fun findByIdAndHiddenAndDeletedAtIsNull(id: Int, hidden: Boolean): Menu?
 }

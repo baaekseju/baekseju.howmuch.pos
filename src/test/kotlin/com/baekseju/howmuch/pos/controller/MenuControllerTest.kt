@@ -31,7 +31,7 @@ internal class MenuControllerTest{
     private lateinit var menuService: MenuService
 
     private fun <T> any(): T {
-        return Mockito.any<T>()
+        return Mockito.any()
     }
 
     private val menus = ArrayList<MenuDto>()
@@ -154,11 +154,16 @@ internal class MenuControllerTest{
     fun getNotExistedMenuDetail(){
         //given
         val id = 3
-        given(menuService.getMenuDetail(id, false)).willThrow(EntityNotFoundException())
+        given(menuService.getMenuDetail(id, false)).willThrow(EntityNotFoundException("menu entity not found"))
 
         //when, then
         mockMvc.perform(get("/api/menus/$id"))
             .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.timeStamp").exists())
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.error").value("NOT_FOUND"))
+            .andExpect(jsonPath("$.path").value("/api/menus/$id"))
+            .andExpect(jsonPath("$.message").value("menu entity not found"))
 
         then(menuService).should().getMenuDetail(id, false)
     }
@@ -214,7 +219,16 @@ internal class MenuControllerTest{
 
     @Test
     fun putNotExistMenu(){
+        val id = 999
+        given(menuService.updateMenu(eq(id), any())).willThrow(EntityNotFoundException())
 
+        mockMvc.perform(
+            put("/api/menus/$id")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"hamburger\", \"price\": 10000, \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
+            .andExpect(status().isNotFound)
+
+        then(menuService).should().updateMenu(eq(id), any())
     }
 
     @Test
@@ -244,6 +258,12 @@ internal class MenuControllerTest{
 
     @Test
     fun deleteNotExistMenu(){
+        val id = 1
+        given(menuService.deleteMenu(id, false)).willThrow(EntityNotFoundException())
 
+        mockMvc.perform(delete("/api/menus/$id"))
+            .andExpect(status().isNotFound)
+
+        then(menuService).should().deleteMenu(id, false)
     }
 }
