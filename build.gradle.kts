@@ -4,6 +4,7 @@ plugins {
 	id("java")
 	id("org.springframework.boot") version "2.5.6"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
+	id("com.google.cloud.tools.jib") version "3.1.4"
 	kotlin("jvm") version "1.5.31"
 	kotlin("kapt") version "1.5.31"
 	kotlin("plugin.spring") version "1.5.31"
@@ -58,4 +59,22 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+jib {
+	to {
+		image = "pos"
+		tags = setOf("latest")
+	}
+
+	from {
+		image = "amazoncorretto:11-alpine-jdk"
+	}
+
+	containerizingMode = "exploded"
+
+	container{
+		ports = listOf("3000")
+		creationTime = "USE_CURRENT_TIMESTAMP"
+	}
 }
