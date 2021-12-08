@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -202,6 +203,21 @@ internal class MenuControllerTest{
     @Test
     fun postMenuWithInvalidData(){
 
+    }
+
+    @Test
+    fun httpMessageConverterFail(){
+        //when, then
+        mockMvc.perform(
+            post("/api/menus")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"price\": 5000, \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.timeStamp").exists())
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.path").value("/api/menus"))
+            .andExpect(jsonPath("$.message").exists())
     }
 
     @Test
