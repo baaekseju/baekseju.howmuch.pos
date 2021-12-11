@@ -12,8 +12,9 @@ class Category (
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var name : String,
-    var createdAt : Instant,
-    var updatedAt : Instant
+    val id : Int? = null,
+    val name : String,
+    val createdAt : Instant? = null,
+    val updatedAt : Instant? = null
 )
 
