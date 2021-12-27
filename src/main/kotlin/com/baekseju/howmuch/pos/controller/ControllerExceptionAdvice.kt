@@ -10,7 +10,7 @@ import javax.persistence.EntityNotFoundException
 import javax.servlet.http.HttpServletRequest
 
 @RestControllerAdvice
-class ExceptionController {
+class ControllerExceptionAdvice {
     @ExceptionHandler(EntityNotFoundException::class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun entityNotFoundHandler(exception: EntityNotFoundException, request: HttpServletRequest) = ErrorDto(
