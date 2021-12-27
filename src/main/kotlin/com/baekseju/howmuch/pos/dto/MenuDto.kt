@@ -20,8 +20,8 @@ class MenuDto(
     @JsonView(MenuJsonView.Detail::class)
     var hidden: Boolean,
     @JsonView(MenuJsonView.Detail::class)
-    createdAt: Instant? = null,
+    var createdAt: Instant? = null,
     @JsonView(MenuJsonView.Detail::class)
-    updatedAt: Instant? = null,
+    var updatedAt: Instant? = null,
     var deletedAt: Instant? = null
-): BaseDto(createdAt, updatedAt)
+)
