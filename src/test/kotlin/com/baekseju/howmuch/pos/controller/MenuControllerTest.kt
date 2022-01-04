@@ -2,6 +2,7 @@ package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.service.MenuService
+import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -212,6 +213,7 @@ internal class MenuControllerTest{
             post("/api/menus")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"price\": 5000, \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
+            .andExpect { result -> assertThat(result.resolvedException).isInstanceOf(HttpMessageNotReadableException::class.java) }
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.timeStamp").exists())
             .andExpect(jsonPath("$.status").value(400))
