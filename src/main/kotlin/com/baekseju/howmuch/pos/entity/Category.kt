@@ -1,20 +1,28 @@
 package com.baekseju.howmuch.pos.entity
 
+import com.baekseju.howmuch.pos.dto.CategoryDto
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 import java.util.*
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity
+@EntityListeners(value = [AuditingEntityListener::class])
 class Category (
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id : Int? = null,
-    val name : String,
-    val createdAt : Instant? = null,
-    val updatedAt : Instant? = null
-)
+    var name : String,
+    @CreatedDate
+    var createdAt : Instant? = null,
+    @LastModifiedDate
+    var updatedAt: Instant? = null,
+    deletedAt: Instant? = null
+): SoftDeleteEntity(deletedAt) {
+    fun updateCategory(categoryDto: CategoryDto) {
+        name = categoryDto.name
+    }
+}
 

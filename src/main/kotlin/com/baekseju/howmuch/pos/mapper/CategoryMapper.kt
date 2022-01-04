@@ -8,5 +8,6 @@ import org.mapstruct.Mapper
 @Mapper(componentModel = "spring")
 interface CategoryMapper {
     fun toEntity(categoryDto: CategoryDto): Category
-    fun ToDto(category: Category): CategoryDto
+    fun toDto(category: Category): CategoryDto
+    fun toDtos(categorys: List<Category>): List<CategoryDto>
 }
