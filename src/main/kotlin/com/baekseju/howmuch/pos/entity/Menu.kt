@@ -24,8 +24,8 @@ class Menu(
     @LastModifiedDate
     var updatedAt: Instant? = null,
     deletedAt: Instant? = null
-): SoftDeleteEntity(deletedAt){
-    fun updateMenu(menuDto: MenuDto){
+) : SoftDeleteEntity(deletedAt) {
+    fun updateMenu(menuDto: MenuDto) {
         name = menuDto.name
         price = menuDto.price
         additionalPrice = menuDto.additionalPrice

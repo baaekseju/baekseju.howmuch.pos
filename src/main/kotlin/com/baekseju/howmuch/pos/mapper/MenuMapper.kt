@@ -6,9 +6,7 @@ import org.mapstruct.Mapper
 
 @Mapper(componentModel = "spring")
 interface MenuMapper {
-    fun menuDtoToEntity(menuDto: MenuDto): Menu
-    fun menuEntityToDto(menu: Menu): MenuDto
-
-    // 함수 명이 맘에 안듬 위에 함수랑 너무 비슷
-    fun menuEntitiesToDtos(menus: List<Menu>): List<MenuDto>
+    fun toEntity(menuDto: MenuDto): Menu
+    fun toDto(menu: Menu): MenuDto
+    fun toDtos(menus: List<Menu>): List<MenuDto>
 }

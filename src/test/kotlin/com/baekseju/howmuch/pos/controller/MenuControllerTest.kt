@@ -2,6 +2,7 @@ package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.service.MenuService
+import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -13,12 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import java.time.Instant
+import javax.persistence.EntityNotFoundException
 
 @WebMvcTest(MenuController::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -30,7 +33,7 @@ internal class MenuControllerTest{
     private lateinit var menuService: MenuService
 
     private fun <T> any(): T {
-        return Mockito.any<T>()
+        return Mockito.any()
     }
 
     private val menus = ArrayList<MenuDto>()
@@ -63,12 +66,23 @@ internal class MenuControllerTest{
             createdAt = Instant.now(),
             updatedAt = Instant.now()
         ))
+        menus.add(MenuDto(
+            id = 3,
+            name = "chips",
+            price = 2000,
+            additionalPrice = 0,
+            categoryId = 102,
+            stock = 500,
+            hidden = true,
+            createdAt = Instant.now(),
+            updatedAt = Instant.now()
+        ))
     }
 
     @Test
-    fun getMenus(){
+    fun getMenusHiddenIsFalse(){
         //given
-        given(menuService.getMenus()).willReturn(menus)
+        given(menuService.getMenus(false)).willReturn(menus.filter { !it.hidden })
 
         //when, then
         mockMvc.perform(get("/api/menus"))
@@ -85,14 +99,27 @@ internal class MenuControllerTest{
             .andExpect(jsonPath("$[0].updatedAt").doesNotExist())
             .andExpect(jsonPath("$[0].deletedAt").doesNotExist())
 
-        then(menuService).should().getMenus()
+        then(menuService).should().getMenus(false)
     }
 
     @Test
-    fun getExistedMenuDetail(){
+    fun getMenusHiddenIsTrue(){
+        //given
+        given(menuService.getMenus(true)).willReturn(menus.filter { it.hidden })
+
+        //when, then
+        mockMvc.perform(get("/api/menus?hidden=true"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$", hasSize<Array<Any>>(1)))
+
+        then(menuService).should().getMenus(true)
+    }
+
+    @Test
+    fun getExistedMenuDetailHiddenIsFalse(){
         //given
         val id = 1
-        given(menuService.getMenuDetail(id)).willReturn(menus[0])
+        given(menuService.getMenuDetail(id, false)).willReturn(menus[0])
 
         //when, then
         mockMvc.perform(get("/api/menus/$id"))
@@ -103,17 +130,44 @@ internal class MenuControllerTest{
             .andExpect(jsonPath("$.additionalPrice").exists())
             .andExpect(jsonPath("$.stock").exists())
             .andExpect(jsonPath("$.categoryId").exists())
-            .andExpect(jsonPath("$.hidden").doesNotExist())
+            .andExpect(jsonPath("$.hidden").value(false))
             .andExpect(jsonPath("$.createdAt").exists())
             .andExpect(jsonPath("$.updatedAt").exists())
             .andExpect(jsonPath("$.deletedAt").doesNotExist())
 
-        then(menuService).should().getMenuDetail(id)
+        then(menuService).should().getMenuDetail(id, false)
+    }
+
+    @Test
+    fun getExistedMenuDetailHiddenIsTrue(){
+        //given
+        val id = 3
+        given(menuService.getMenuDetail(id, true)).willReturn(menus[2])
+
+        //when, then
+        mockMvc.perform(get("/api/menus/$id?hidden=true"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.hidden").value(true))
+
+        then(menuService).should().getMenuDetail(id, true)
     }
 
     @Test
     fun getNotExistedMenuDetail(){
+        //given
+        val id = 3
+        given(menuService.getMenuDetail(id, false)).willThrow(EntityNotFoundException("menu entity not found"))
 
+        //when, then
+        mockMvc.perform(get("/api/menus/$id"))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.timeStamp").exists())
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.error").value("NOT_FOUND"))
+            .andExpect(jsonPath("$.path").value("/api/menus/$id"))
+            .andExpect(jsonPath("$.message").value("menu entity not found"))
+
+        then(menuService).should().getMenuDetail(id, false)
     }
 
     @Test
@@ -153,6 +207,22 @@ internal class MenuControllerTest{
     }
 
     @Test
+    fun httpMessageConverterFail(){
+        //when, then
+        mockMvc.perform(
+            post("/api/menus")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"price\": 5000, \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
+            .andExpect { result -> assertThat(result.resolvedException).isInstanceOf(HttpMessageNotReadableException::class.java) }
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.timeStamp").exists())
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.path").value("/api/menus"))
+            .andExpect(jsonPath("$.message").exists())
+    }
+
+    @Test
     fun putExistMenu(){
         val id = 1
         mockMvc.perform(
@@ -167,7 +237,16 @@ internal class MenuControllerTest{
 
     @Test
     fun putNotExistMenu(){
+        val id = 999
+        given(menuService.updateMenu(eq(id), any())).willThrow(EntityNotFoundException())
 
+        mockMvc.perform(
+            put("/api/menus/$id")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"hamburger\", \"price\": 10000, \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
+            .andExpect(status().isNotFound)
+
+        then(menuService).should().updateMenu(eq(id), any())
     }
 
     @Test
@@ -197,6 +276,12 @@ internal class MenuControllerTest{
 
     @Test
     fun deleteNotExistMenu(){
+        val id = 1
+        given(menuService.deleteMenu(id, false)).willThrow(EntityNotFoundException())
 
+        mockMvc.perform(delete("/api/menus/$id"))
+            .andExpect(status().isNotFound)
+
+        then(menuService).should().deleteMenu(id, false)
     }
 }
