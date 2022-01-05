@@ -14,8 +14,8 @@ class MenuService(val menuRepository: MenuRepository, val menuMapper: MenuMapper
         return menuMapper.toDtos(menuEntities)
     }
 
-    fun getMenuDetail(menuId: Int, hidden: Boolean): MenuDto {
-        val menuEntity = menuRepository.findByIdAndHiddenAndDeletedAtIsNull(menuId, hidden) ?: throw EntityNotFoundException()
+    fun getMenu(menuId: Int): MenuDto {
+        val menuEntity = menuRepository.findById(menuId).orElse(null) ?: throw EntityNotFoundException()
         return menuMapper.toDto(menuEntity)
     }
 
@@ -25,14 +25,14 @@ class MenuService(val menuRepository: MenuRepository, val menuMapper: MenuMapper
     }
 
     fun updateMenu(menuId: Int, menuDto: MenuDto): MenuDto {
-        val menuEntity = menuRepository.findById(menuId).orElseThrow{EntityNotFoundException()}
+        val menuEntity = menuRepository.findById(menuId).orElse(null) ?: throw EntityNotFoundException()
         menuEntity.updateMenu(menuDto)
         menuRepository.save(menuEntity)
         return menuMapper.toDto(menuEntity)
     }
 
     fun deleteMenu(menuId: Int, force: Boolean): String {
-        val menuEntity = menuRepository.findById(menuId).orElseThrow{EntityNotFoundException()}
+        val menuEntity = menuRepository.findById(menuId).orElse(null) ?: throw EntityNotFoundException()
         return if (force) {
             menuRepository.delete(menuEntity)
             "force delete success"

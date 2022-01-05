@@ -22,10 +22,11 @@ class ControllerExceptionAdvice {
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun httpMessageNotReadableHandler(exception: HttpMessageNotReadableException, request: HttpServletRequest) = ErrorDto(
-        status = HttpStatus.BAD_REQUEST.value(),
-        error = HttpStatus.BAD_REQUEST.reasonPhrase,
-        path = request.requestURI,
-        message = exception.message
-    )
+    fun httpMessageNotReadableHandler(exception: HttpMessageNotReadableException, request: HttpServletRequest) =
+        ErrorDto(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
+            path = request.requestURI,
+            message = exception.message
+        )
 }

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -15,32 +14,34 @@ internal class MenuRepositoryTest {
     private lateinit var menuRepository: MenuRepository
 
     @AfterEach
-    fun initDB(){
+    fun initDB() {
         menuRepository.deleteAll()
     }
 
     @Test
-    fun findAll(){
-        menuRepository.save(Menu(
-            name = "hamburger",
-            price = 5000,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 500,
-            categoryId = 100,
-            stock = 50,
-            hidden = false
+    fun findAll() {
+        menuRepository.save(
+            Menu(
+                name = "hamburger",
+                price = 5000,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 500,
+                categoryId = 100,
+                stock = 50,
+                hidden = false
+            )
         )
-        )
-        menuRepository.save(Menu(
-            name = "cola",
-            price = 1500,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 0,
-            categoryId = 103,
-            stock = 999,
-            hidden = false,
-            deletedAt = null
-        )
+        menuRepository.save(
+            Menu(
+                name = "cola",
+                price = 1500,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 0,
+                categoryId = 103,
+                stock = 999,
+                hidden = false,
+                deletedAt = null
+            )
         )
 
         //when
@@ -53,7 +54,7 @@ internal class MenuRepositoryTest {
     }
 
     @Test
-    fun save(){
+    fun save() {
         //given
         val menu = Menu(
             name = "hamburger",
@@ -75,7 +76,7 @@ internal class MenuRepositoryTest {
     }
 
     @Test
-    fun update(){
+    fun update() {
         //given
         val menu = Menu(
             name = "hamburger",
@@ -98,7 +99,7 @@ internal class MenuRepositoryTest {
     }
 
     @Test
-    fun softDelete(){
+    fun softDelete() {
         //given
         val menu = Menu(
             name = "hamburger",
@@ -110,7 +111,7 @@ internal class MenuRepositoryTest {
             hidden = false
         )
         val savedMenu = menuRepository.save(menu)
-        val id = savedMenu.id !!
+        val id = savedMenu.id!!
 
         //when
         savedMenu.softDelete()
@@ -123,7 +124,7 @@ internal class MenuRepositoryTest {
     }
 
     @Test
-    fun forceDelete(){
+    fun forceDelete() {
         //given
         val menu = Menu(
             name = "hamburger",
@@ -135,7 +136,7 @@ internal class MenuRepositoryTest {
             hidden = false
         )
         val savedMenu = menuRepository.save(menu)
-        val id = savedMenu.id !!
+        val id = savedMenu.id!!
 
         //when
         menuRepository.delete(savedMenu)

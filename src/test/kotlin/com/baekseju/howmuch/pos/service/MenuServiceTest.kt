@@ -7,8 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.then
+import org.mockito.BDDMockito.*
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -17,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles
 import java.time.Instant
 import java.util.*
 import javax.persistence.EntityNotFoundException
-import kotlin.collections.ArrayList
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -36,52 +34,58 @@ internal class MenuServiceTest {
     }
 
     @BeforeEach
-    fun setup(){
+    fun setup() {
         setMenus()
     }
 
-    private fun setMenus(){
-        menus.add(Menu(
-            id = 1,
-            name = "hamburger",
-            price = 5000,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 500,
-            categoryId = 100,
-            stock = 50,
-            hidden = false,
-            createdAt = Instant.now(),
-            updatedAt = Instant.now()
-        ))
-        menus.add(Menu(
-            id = 2,
-            name = "cola",
-            price = 1500,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 0,
-            categoryId = 103,
-            stock = 999,
-            hidden = false,
-            createdAt = Instant.now(),
-            updatedAt = Instant.now(),
-            deletedAt = Instant.now()
-        ))
-        menus.add(Menu(
-            id = 3,
-            name = "wing",
-            price = 6000,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 2000,
-            categoryId = 102,
-            stock = 10,
-            hidden = true,
-            createdAt = Instant.now(),
-            updatedAt = Instant.now()
-        ))
+    private fun setMenus() {
+        menus.add(
+            Menu(
+                id = 1,
+                name = "hamburger",
+                price = 5000,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 500,
+                categoryId = 100,
+                stock = 50,
+                hidden = false,
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
+            )
+        )
+        menus.add(
+            Menu(
+                id = 2,
+                name = "cola",
+                price = 1500,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 0,
+                categoryId = 103,
+                stock = 999,
+                hidden = false,
+                createdAt = Instant.now(),
+                updatedAt = Instant.now(),
+                deletedAt = Instant.now()
+            )
+        )
+        menus.add(
+            Menu(
+                id = 3,
+                name = "wing",
+                price = 6000,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 2000,
+                categoryId = 102,
+                stock = 10,
+                hidden = true,
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
+            )
+        )
     }
 
     @Test
-    fun getMenusHiddenIsFalse(){
+    fun getMenusHiddenIsFalse() {
         //given
         given(menuRepository.findAllByHiddenAndDeletedAtIsNull(false)).willReturn(
             menus.filter { menu -> !menu.hidden && menu.deletedAt == null }
@@ -91,12 +95,13 @@ internal class MenuServiceTest {
         val menuDtos = menuService.getMenus(false)
 
         //then
+        then(menuRepository).should().findAllByHiddenAndDeletedAtIsNull(false)
         assertThat(menuDtos.size).isEqualTo(1)
-        assertThat(menuDtos[0].name).isEqualTo("hamburger")
+        assertThat(menuDtos[0].hidden).isFalse
     }
 
     @Test
-    fun getMenusHiddenIsTrue(){
+    fun getMenusHiddenIsTrue() {
         //given
         given(menuRepository.findAllByHiddenAndDeletedAtIsNull(true)).willReturn(
             menus.filter { menu -> menu.hidden && menu.deletedAt == null }
@@ -106,38 +111,39 @@ internal class MenuServiceTest {
         val menuDtos = menuService.getMenus(true)
 
         //then
+        then(menuRepository).should().findAllByHiddenAndDeletedAtIsNull(true)
         assertThat(menuDtos.size).isEqualTo(1)
-        assertThat(menuDtos[0].name).isEqualTo("wing")
+        assertThat(menuDtos[0].hidden).isTrue
     }
 
     @Test
-    fun getExistMenuDetail(){
+    fun getExistMenuDetail() {
         //given
         val id = 1
-        given(menuRepository.findByIdAndHiddenAndDeletedAtIsNull(id, false)).willReturn(
-            menus.first { menu -> menu.id == id && !menu.hidden && menu.deletedAt == null }
-        )
+        given(menuRepository.findById(id)).willReturn(Optional.of(menus.first { menu -> menu.id == id }))
 
         //when
-        val menuDetail = menuService.getMenuDetail(id, false)
+        val menuDetail = menuService.getMenu(id)
 
         //then
+        then(menuRepository).should().findById(id)
         assertThat(menuDetail.id).isEqualTo(id)
     }
 
     @Test
-    fun getNotExistMenuDetail(){
+    fun getNotExistMenuDetail() {
         //given
         val id = 999
-        given(menuRepository.findByIdAndHiddenAndDeletedAtIsNull(id, false)).willReturn(null)
+        given(menuRepository.findById(id)).willReturn(Optional.empty())
 
         //when, then
-        assertThatThrownBy { menuService.getMenuDetail(id, false) }
+        assertThatThrownBy { menuService.getMenu(id) }
             .isInstanceOf(EntityNotFoundException::class.java)
+        then(menuRepository).should().findById(id)
     }
 
     @Test
-    fun addMenu(){
+    fun addMenu() {
         //given
         val id = 1
         given(menuRepository.save(any())).will {
@@ -169,14 +175,15 @@ internal class MenuServiceTest {
         val menuDto = menuService.addMenu(menuDtoMock)
 
         //then
+        then(menuRepository).should().save(any())
         assertThat(menuDto.id).isEqualTo(id)
     }
 
     @Test
-    fun updateExistMenu(){
+    fun updateExistMenu() {
         //given
         val id = 1
-        given(menuRepository.findById(id)).willReturn(Optional.of(menus[0]))
+        given(menuRepository.findById(id)).willReturn(Optional.of(menus.first { it.id == id }))
         val menuDtoMock = MenuDto(
             name = "hamburger",
             price = 10000,
@@ -191,6 +198,7 @@ internal class MenuServiceTest {
         val menuDto = menuService.updateMenu(id, menuDtoMock)
 
         //then
+        then(menuRepository).should().save(any())
         assertThat(menuDto.price).isEqualTo(10000)
         assertThat(menuDto.imageUrl).isEqualTo("https://via.placeholder.com/300x300")
         assertThat(menuDto.additionalPrice).isEqualTo(1000)
@@ -200,7 +208,7 @@ internal class MenuServiceTest {
     }
 
     @Test
-    fun updateNotExistMenu(){
+    fun updateNotExistMenu() {
         val id = 999
         given(menuRepository.findById(id)).willReturn(Optional.empty())
         val menuDtoMock = MenuDto(
@@ -216,30 +224,33 @@ internal class MenuServiceTest {
         //when, then
         assertThatThrownBy { menuService.updateMenu(id, menuDtoMock) }
             .isInstanceOf(EntityNotFoundException::class.java)
+        then(menuRepository).should(never()).save(any())
     }
 
     @Test
-    fun softDeleteMenu(){
+    fun softDeleteMenu() {
         val id = 1
-        given(menuRepository.findById(id)).willReturn(Optional.of(menus[0]))
+        given(menuRepository.findById(id)).willReturn(Optional.of(menus.first { it.id == id }))
 
         val result = menuService.deleteMenu(id, false)
 
+        then(menuRepository).should().save(any())
         assertThat(result).isEqualTo("soft delete success")
     }
 
     @Test
-    fun forceDeleteMenu(){
+    fun forceDeleteMenu() {
         val id = 1
-        given(menuRepository.findById(id)).willReturn(Optional.of(menus[0]))
+        given(menuRepository.findById(id)).willReturn(Optional.of(menus.first { it.id == id }))
 
         val result = menuService.deleteMenu(id, true)
 
+        then(menuRepository.delete(any()))
         assertThat(result).isEqualTo("force delete success")
     }
 
     @Test
-    fun deleteNotExistMenu(){
+    fun deleteNotExistMenu() {
         //given
         val id = 999
         given(menuRepository.findById(id)).willReturn(Optional.empty())
@@ -247,5 +258,7 @@ internal class MenuServiceTest {
         //when, then
         assertThatThrownBy { menuService.deleteMenu(id, false) }
             .isInstanceOf(EntityNotFoundException::class.java)
+        then(menuRepository).should(never()).delete(any())
+        then(menuRepository).should(never()).save(any())
     }
 }

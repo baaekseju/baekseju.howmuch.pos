@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.Instant
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class ErrorDto (
+class ErrorDto(
     val timeStamp: Instant = Instant.now(),
     val status: Int,
     val error: String,

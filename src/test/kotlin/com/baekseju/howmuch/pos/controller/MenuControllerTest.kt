@@ -25,9 +25,10 @@ import javax.persistence.EntityNotFoundException
 
 @WebMvcTest(MenuController::class)
 @ActiveProfiles("dev")
-internal class MenuControllerTest{
+internal class MenuControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
+
     @MockBean
     private lateinit var menuService: MenuService
 
@@ -38,51 +39,57 @@ internal class MenuControllerTest{
     private val menuDtos = mutableListOf<MenuDto>()
 
     @BeforeEach
-    fun setup(){
+    fun setup() {
         setMenuDtos()
     }
 
-    private fun setMenuDtos(){
-        menuDtos.add(MenuDto(
-            id = 1,
-            name = "hamburger",
-            price = 5000,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 500,
-            categoryId = 100,
-            stock = 30,
-            hidden = false,
-            createdAt = Instant.now(),
-            updatedAt = Instant.now()
-        ))
-        menuDtos.add(MenuDto(
-            id = 2,
-            name = "cola",
-            price = 1500,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 0,
-            categoryId = 103,
-            stock = 999,
-            hidden = false,
-            createdAt = Instant.now(),
-            updatedAt = Instant.now()
-        ))
-        menuDtos.add(MenuDto(
-            id = 3,
-            name = "chips",
-            price = 2000,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 0,
-            categoryId = 102,
-            stock = 500,
-            hidden = true,
-            createdAt = Instant.now(),
-            updatedAt = Instant.now()
-        ))
+    private fun setMenuDtos() {
+        menuDtos.add(
+            MenuDto(
+                id = 1,
+                name = "hamburger",
+                price = 5000,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 500,
+                categoryId = 100,
+                stock = 30,
+                hidden = false,
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
+            )
+        )
+        menuDtos.add(
+            MenuDto(
+                id = 2,
+                name = "cola",
+                price = 1500,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 0,
+                categoryId = 103,
+                stock = 999,
+                hidden = false,
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
+            )
+        )
+        menuDtos.add(
+            MenuDto(
+                id = 3,
+                name = "chips",
+                price = 2000,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 0,
+                categoryId = 102,
+                stock = 500,
+                hidden = true,
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
+            )
+        )
     }
 
     @Test
-    fun getMenusHiddenIsFalse(){
+    fun getMenusHiddenIsFalse() {
         //given
         given(menuService.getMenus(false)).willReturn(menuDtos.filter { !it.hidden })
 
@@ -106,7 +113,7 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun getMenusHiddenIsTrue(){
+    fun getMenusHiddenIsTrue() {
         //given
         given(menuService.getMenus(true)).willReturn(menuDtos.filter { it.hidden })
 
@@ -119,10 +126,10 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun getExistedMenuDetailHiddenIsFalse(){
+    fun getExistedMenu() {
         //given
         val id = 1
-        given(menuService.getMenuDetail(id, false)).willReturn(menuDtos[0])
+        given(menuService.getMenu(id)).willReturn(menuDtos.first { it.id == id })
 
         //when, then
         mockMvc.perform(get("/api/menus/$id"))
@@ -139,28 +146,15 @@ internal class MenuControllerTest{
             .andExpect(jsonPath("$.updatedAt").exists())
             .andExpect(jsonPath("$.deletedAt").doesNotExist())
 
-        then(menuService).should().getMenuDetail(id, false)
+        then(menuService).should().getMenu(id)
     }
 
     @Test
-    fun getExistedMenuDetailHiddenIsTrue(){
+    fun getNotExistedMenuDetail() {
         //given
-        val id = 3
-        given(menuService.getMenuDetail(id, true)).willReturn(menuDtos[2])
-
-        //when, then
-        mockMvc.perform(get("/api/menus/$id?hidden=true"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.hidden").value(true))
-
-        then(menuService).should().getMenuDetail(id, true)
-    }
-
-    @Test
-    fun getNotExistedMenuDetail(){
-        //given
-        val id = 3
-        given(menuService.getMenuDetail(id, false)).willThrow(EntityNotFoundException("menu entity not found"))
+        val id = 999
+        val errorMsg = "menu entity not found"
+        given(menuService.getMenu(id)).willThrow(EntityNotFoundException(errorMsg))
 
         //when, then
         mockMvc.perform(get("/api/menus/$id"))
@@ -169,17 +163,17 @@ internal class MenuControllerTest{
             .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/menus/$id"))
-            .andExpect(jsonPath("$.message").value("menu entity not found"))
+            .andExpect(jsonPath("$.message").value(errorMsg))
 
-        then(menuService).should().getMenuDetail(id, false)
+        then(menuService).should().getMenu(id)
     }
 
     @Test
-    fun postMenuWithValidData(){
+    fun postMenuWithValidData() {
         //given
         val id = 1
         given(menuService.addMenu(any())).will {
-            val menuDto : MenuDto = it.getArgument(0)
+            val menuDto: MenuDto = it.getArgument(0)
             MenuDto(
                 id = id,
                 name = menuDto.name,
@@ -198,7 +192,8 @@ internal class MenuControllerTest{
         mockMvc.perform(
             post("/api/menus")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"hamburger\", \"price\": 5000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
+                .content("{\"name\":\"hamburger\", \"price\": 5000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}")
+        )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(id))
             .andExpect(jsonPath("$.name").value("hamburger"))
@@ -207,17 +202,18 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun postMenuWithInvalidData(){
+    fun postMenuWithInvalidData() {
 
     }
 
     @Test
-    fun httpMessageConverterFail(){
+    fun httpMessageConverterFail() {
         //when, then
         mockMvc.perform(
             post("/api/menus")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"price\": 5000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
+                .content("{\"price\": 5000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}")
+        )
             .andExpect { result -> assertThat(result.resolvedException).isInstanceOf(HttpMessageNotReadableException::class.java) }
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.timeStamp").exists())
@@ -228,12 +224,13 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun putExistMenu(){
+    fun putExistMenu() {
         val id = 1
         mockMvc.perform(
             put("/api/menus/$id")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"hamburger\", \"price\": 10000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
+                .content("{\"name\":\"hamburger\", \"price\": 10000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}")
+        )
             .andExpect(status().isOk)
             .andDo(print())
 
@@ -241,26 +238,27 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun putNotExistMenu(){
+    fun putNotExistMenu() {
         val id = 999
         given(menuService.updateMenu(eq(id), any())).willThrow(EntityNotFoundException())
 
         mockMvc.perform(
             put("/api/menus/$id")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"hamburger\", \"price\": 10000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
+                .content("{\"name\":\"hamburger\", \"price\": 10000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}")
+        )
             .andExpect(status().isNotFound)
 
         then(menuService).should().updateMenu(eq(id), any())
     }
 
     @Test
-    fun putMenuWithInvalidData(){
+    fun putMenuWithInvalidData() {
 
     }
 
     @Test
-    fun softDeleteMenu(){
+    fun softDeleteMenu() {
         val id = 1
 
         mockMvc.perform(delete("/api/menus/$id"))
@@ -270,7 +268,7 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun forceDeleteMenu(){
+    fun forceDeleteMenu() {
         val id = 1
 
         mockMvc.perform(delete("/api/menus/$id?force=true"))
@@ -280,8 +278,8 @@ internal class MenuControllerTest{
     }
 
     @Test
-    fun deleteNotExistMenu(){
-        val id = 1
+    fun deleteNotExistMenu() {
+        val id = 999
         given(menuService.deleteMenu(id, false)).willThrow(EntityNotFoundException())
 
         mockMvc.perform(delete("/api/menus/$id"))

@@ -16,7 +16,7 @@ class SetMenuService(val setMenuRepository: SetMenuRepository, val setMenuMapper
     }
 
     fun getSetMenu(setMenuId: Int): SetMenuDto {
-        val setMenu = setMenuRepository.findById(setMenuId).orElse(null) ?: throw EntityNotFoundException("setmenu not exist")
+        val setMenu = setMenuRepository.findById(setMenuId).orElse(null) ?: throw EntityNotFoundException()
         return setMenuMapper.toDto(setMenu)
     }
 }
