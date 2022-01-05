@@ -24,6 +24,7 @@ internal class MenuRepositoryTest {
         menuRepository.save(Menu(
             name = "hamburger",
             price = 5000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
             categoryId = 100,
             stock = 50,
@@ -33,6 +34,7 @@ internal class MenuRepositoryTest {
         menuRepository.save(Menu(
             name = "cola",
             price = 1500,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 0,
             categoryId = 103,
             stock = 999,
@@ -66,6 +68,7 @@ internal class MenuRepositoryTest {
         val menu = Menu(
             name = "hamburger",
             price = 5000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
             categoryId = 100,
             stock = 50,
@@ -87,6 +90,7 @@ internal class MenuRepositoryTest {
         val menu = Menu(
             name = "hamburger",
             price = 5000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
             categoryId = 100,
             stock = 50,
@@ -109,6 +113,7 @@ internal class MenuRepositoryTest {
         val menu = Menu(
             name = "hamburger",
             price = 5000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
             categoryId = 100,
             stock = 50,
@@ -133,6 +138,7 @@ internal class MenuRepositoryTest {
         val menu = Menu(
             name = "hamburger",
             price = 5000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
             categoryId = 100,
             stock = 50,

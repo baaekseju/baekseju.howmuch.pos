@@ -44,6 +44,7 @@ internal class MenuServiceTest {
             id = 1,
             name = "hamburger",
             price = 5000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
             categoryId = 100,
             stock = 50,
@@ -55,6 +56,7 @@ internal class MenuServiceTest {
             id = 2,
             name = "cola",
             price = 1500,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 0,
             categoryId = 103,
             stock = 999,
@@ -67,6 +69,7 @@ internal class MenuServiceTest {
             id = 3,
             name = "wing",
             price = 6000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 2000,
             categoryId = 102,
             stock = 10,
@@ -142,6 +145,7 @@ internal class MenuServiceTest {
                 id = id,
                 name = menu.name,
                 price = menu.price,
+                imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = menu.additionalPrice,
                 categoryId = menu.categoryId,
                 stock = menu.stock,
@@ -153,6 +157,7 @@ internal class MenuServiceTest {
         val menuDtoMock = MenuDto(
             name = "hamburger",
             price = 5000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
             categoryId = 100,
             stock = 50,
@@ -174,6 +179,7 @@ internal class MenuServiceTest {
         val menuDtoMock = MenuDto(
             name = "hamburger",
             price = 10000,
+            imageUrl = "https://via.placeholder.com/300x300",
             additionalPrice = 1000,
             categoryId = 100,
             stock = 500,
@@ -185,6 +191,7 @@ internal class MenuServiceTest {
 
         //then
         assertThat(menuDto.price).isEqualTo(10000)
+        assertThat(menuDto.imageUrl).isEqualTo("https://via.placeholder.com/300x300")
         assertThat(menuDto.additionalPrice).isEqualTo(1000)
         assertThat(menuDto.categoryId).isEqualTo(100)
         assertThat(menuDto.stock).isEqualTo(500)
@@ -198,6 +205,7 @@ internal class MenuServiceTest {
         val menuDtoMock = MenuDto(
             name = "hamburger",
             price = 10000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 1000,
             categoryId = 100,
             stock = 500,

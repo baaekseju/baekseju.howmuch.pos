@@ -48,6 +48,7 @@ internal class MenuControllerTest{
             id = 1,
             name = "hamburger",
             price = 5000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
             categoryId = 100,
             stock = 30,
@@ -59,6 +60,7 @@ internal class MenuControllerTest{
             id = 2,
             name = "cola",
             price = 1500,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 0,
             categoryId = 103,
             stock = 999,
@@ -70,6 +72,7 @@ internal class MenuControllerTest{
             id = 3,
             name = "chips",
             price = 2000,
+            imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 0,
             categoryId = 102,
             stock = 500,
@@ -91,6 +94,7 @@ internal class MenuControllerTest{
             .andExpect(jsonPath("$[0].id").exists())
             .andExpect(jsonPath("$[0].name").exists())
             .andExpect(jsonPath("$[0].price").exists())
+            .andExpect(jsonPath("$[0].imageUrl").exists())
             .andExpect(jsonPath("$[0].additionalPrice").exists())
             .andExpect(jsonPath("$[0].stock").exists())
             .andExpect(jsonPath("$[0].categoryId").doesNotExist())
@@ -127,6 +131,7 @@ internal class MenuControllerTest{
             .andExpect(jsonPath("$.id").value("$id"))
             .andExpect(jsonPath("$.name").exists())
             .andExpect(jsonPath("$.price").exists())
+            .andExpect(jsonPath("$.imageUrl").exists())
             .andExpect(jsonPath("$.additionalPrice").exists())
             .andExpect(jsonPath("$.stock").exists())
             .andExpect(jsonPath("$.categoryId").exists())
@@ -180,6 +185,7 @@ internal class MenuControllerTest{
                 id = id,
                 name = menuDto.name,
                 price = menuDto.price,
+                imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = menuDto.additionalPrice,
                 categoryId = menuDto.categoryId,
                 stock = menuDto.stock,
@@ -193,7 +199,7 @@ internal class MenuControllerTest{
         mockMvc.perform(
             post("/api/menus")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"hamburger\", \"price\": 5000, \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
+                .content("{\"name\":\"hamburger\", \"price\": 5000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(id))
             .andExpect(jsonPath("$.name").value("hamburger"))
@@ -212,7 +218,7 @@ internal class MenuControllerTest{
         mockMvc.perform(
             post("/api/menus")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"price\": 5000, \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
+                .content("{\"price\": 5000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}"))
             .andExpect { result -> assertThat(result.resolvedException).isInstanceOf(HttpMessageNotReadableException::class.java) }
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.timeStamp").exists())
@@ -228,7 +234,7 @@ internal class MenuControllerTest{
         mockMvc.perform(
             put("/api/menus/$id")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"hamburger\", \"price\": 10000, \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
+                .content("{\"name\":\"hamburger\", \"price\": 10000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
             .andExpect(status().isOk)
             .andDo(print())
 
@@ -243,7 +249,7 @@ internal class MenuControllerTest{
         mockMvc.perform(
             put("/api/menus/$id")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"hamburger\", \"price\": 10000, \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
+                .content("{\"name\":\"hamburger\", \"price\": 10000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}"))
             .andExpect(status().isNotFound)
 
         then(menuService).should().updateMenu(eq(id), any())

@@ -12,6 +12,8 @@ class MenuDto(
     @JsonView(MenuJsonView.Simple::class)
     var price: Int,
     @JsonView(MenuJsonView.Simple::class)
+    var imageUrl: String,
+    @JsonView(MenuJsonView.Simple::class)
     var additionalPrice: Int,
     @JsonView(MenuJsonView.Detail::class)
     var categoryId: Int,

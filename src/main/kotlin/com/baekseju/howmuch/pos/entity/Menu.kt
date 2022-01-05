@@ -15,6 +15,7 @@ class Menu(
     val id: Int? = null,
     var name: String,
     var price: Int,
+    var imageUrl: String,
     var additionalPrice: Int,
     var categoryId: Int,
     var stock: Int,
@@ -28,6 +29,7 @@ class Menu(
     fun updateMenu(menuDto: MenuDto) {
         name = menuDto.name
         price = menuDto.price
+        imageUrl = menuDto.imageUrl
         additionalPrice = menuDto.additionalPrice
         categoryId = menuDto.categoryId
         stock = menuDto.stock
