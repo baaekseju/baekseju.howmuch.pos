@@ -7,4 +7,5 @@ import org.mapstruct.Mapper
 @Mapper(componentModel = "spring")
 interface SetMenuMapper {
     fun toDtos(setMenuDtos: List<SetMenu>): List<SetMenuDto>
+    fun toDto(setMenuDto: SetMenu): SetMenuDto
 }

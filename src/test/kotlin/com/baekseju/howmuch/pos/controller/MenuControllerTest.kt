@@ -12,6 +12,7 @@ import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.test.context.ActiveProfiles
@@ -165,8 +166,8 @@ internal class MenuControllerTest{
         mockMvc.perform(get("/api/menus/$id"))
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.timeStamp").exists())
-            .andExpect(jsonPath("$.status").value(404))
-            .andExpect(jsonPath("$.error").value("NOT_FOUND"))
+            .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/menus/$id"))
             .andExpect(jsonPath("$.message").value("menu entity not found"))
 
@@ -220,8 +221,8 @@ internal class MenuControllerTest{
             .andExpect { result -> assertThat(result.resolvedException).isInstanceOf(HttpMessageNotReadableException::class.java) }
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.timeStamp").exists())
-            .andExpect(jsonPath("$.status").value(400))
-            .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/menus"))
             .andExpect(jsonPath("$.message").exists())
     }

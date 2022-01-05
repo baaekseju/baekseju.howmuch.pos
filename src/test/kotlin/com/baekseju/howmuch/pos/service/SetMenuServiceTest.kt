@@ -3,15 +3,19 @@ package com.baekseju.howmuch.pos.service
 import com.baekseju.howmuch.pos.entity.SetMenu
 import com.baekseju.howmuch.pos.repository.SetMenuRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.then
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import java.time.Instant
+import java.util.*
+import javax.persistence.EntityNotFoundException
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -22,7 +26,7 @@ internal class SetMenuServiceTest {
     @MockBean
     private lateinit var setMenuRepository: SetMenuRepository
 
-    private val setMenus = ArrayList<SetMenu>()
+    private val setMenus = mutableListOf<SetMenu>()
 
     private fun <T> any(): T {
         return Mockito.any()
@@ -70,24 +74,47 @@ internal class SetMenuServiceTest {
     }
 
     @Test
-    fun getMenusHiddenIsFalse() {
+    fun getSetMenusHiddenIsFalse() {
         given(setMenuRepository.findAllByHiddenAndDeletedAtIsNull(false)).willReturn(
             setMenus.filter { !it.hidden }
         )
 
         val setMenuDtos = setMenuService.getSetMenus(false)
 
+        then(setMenuRepository).should().findAllByHiddenAndDeletedAtIsNull(false)
         assertThat(setMenuDtos.size).isEqualTo(2)
     }
 
     @Test
-    fun getMenusHiddenIsTrue() {
+    fun getSetMenusHiddenIsTrue() {
         given(setMenuRepository.findAllByHiddenAndDeletedAtIsNull(true)).willReturn(
             setMenus.filter { it.hidden }
         )
 
         val setMenuDtos = setMenuService.getSetMenus(true)
 
+        then(setMenuRepository).should().findAllByHiddenAndDeletedAtIsNull(true)
         assertThat(setMenuDtos.size).isEqualTo(1)
+    }
+
+    @Test
+    fun getExistSetMenu() {
+        val id = 1
+        given(setMenuRepository.findById(id)).willReturn(Optional.of(setMenus.first { it.id == id }))
+
+        val setMenu = setMenuService.getSetMenu(id)
+
+        then(setMenuRepository).should().findById(id)
+        assertThat(setMenu.id).isEqualTo(id)
+    }
+
+    @Test
+    fun getNotExistSetMenu() {
+        val id = 999
+        given(setMenuRepository.findById(id)).willReturn(Optional.empty())
+
+        assertThatThrownBy { setMenuService.getSetMenu(id) }
+            .isInstanceOf(EntityNotFoundException::class.java)
+        then(setMenuRepository).should().findById(id)
     }
 }

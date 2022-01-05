@@ -11,12 +11,14 @@ import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
+import javax.persistence.EntityNotFoundException
 
 @WebMvcTest(SetMenuController::class)
 @ActiveProfiles("dev")
@@ -75,10 +77,11 @@ internal class SetMenuControllerTest {
     }
 
     @Test
-    fun getMenusHiddenIsFalse() {
+    fun getSetMenusHiddenIsFalse() {
+        val url = "/api/setmenus"
         given(setMenuService.getSetMenus(false)).willReturn(setMenuDtos.filter { !it.hidden })
 
-        mockMvc.perform(get("/api/setmenus"))
+        mockMvc.perform(get(url))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", Matchers.hasSize<Array<Any>>(2)))
 
@@ -86,13 +89,45 @@ internal class SetMenuControllerTest {
     }
 
     @Test
-    fun getMenusHiddenIsTrue() {
+    fun getSetMenusHiddenIsTrue() {
+        val url = "/api/setmenus?hidden=true"
         given(setMenuService.getSetMenus(true)).willReturn(setMenuDtos.filter { it.hidden })
 
-        mockMvc.perform(get("/api/setmenus?hidden=true"))
+        mockMvc.perform(get(url))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$", Matchers.hasSize<Array<Any>>(1)))
 
         then(setMenuService).should().getSetMenus(true)
+    }
+
+    @Test
+    fun getExistSetMenu() {
+        val id = 1
+        val url = "/api/setmenus/$id"
+        given(setMenuService.getSetMenu(id)).willReturn(setMenuDtos.first { it.id == id })
+
+        mockMvc.perform(get(url))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(id))
+
+        then(setMenuService).should().getSetMenu(id)
+    }
+
+    @Test
+    fun getNotExistSetMenu() {
+        val id = 999
+        val errorMsg = "setmenu entity not found"
+        val url = "/api/setmenus/$id"
+        given(setMenuService.getSetMenu(id)).willThrow(EntityNotFoundException(errorMsg))
+
+        mockMvc.perform(get(url))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.timeStamp").exists())
+            .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
+            .andExpect(jsonPath("$.path").value(url))
+            .andExpect(jsonPath("$.message").value(errorMsg))
+
+        then(setMenuService).should().getSetMenu(id)
     }
 }
