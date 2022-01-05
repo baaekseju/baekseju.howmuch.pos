@@ -4,9 +4,8 @@ import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.service.MenuService
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.hasSize
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.*
 import org.mockito.Mockito
@@ -24,7 +23,6 @@ import java.time.Instant
 import javax.persistence.EntityNotFoundException
 
 @WebMvcTest(MenuController::class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("dev")
 internal class MenuControllerTest{
     @Autowired
@@ -36,15 +34,15 @@ internal class MenuControllerTest{
         return Mockito.any()
     }
 
-    private val menus = ArrayList<MenuDto>()
+    private val menuDtos = mutableListOf<MenuDto>()
 
-    @BeforeAll
+    @BeforeEach
     fun setup(){
-        setMenus()
+        setMenuDtos()
     }
 
-    private fun setMenus(){
-        menus.add(MenuDto(
+    private fun setMenuDtos(){
+        menuDtos.add(MenuDto(
             id = 1,
             name = "hamburger",
             price = 5000,
@@ -56,7 +54,7 @@ internal class MenuControllerTest{
             createdAt = Instant.now(),
             updatedAt = Instant.now()
         ))
-        menus.add(MenuDto(
+        menuDtos.add(MenuDto(
             id = 2,
             name = "cola",
             price = 1500,
@@ -68,7 +66,7 @@ internal class MenuControllerTest{
             createdAt = Instant.now(),
             updatedAt = Instant.now()
         ))
-        menus.add(MenuDto(
+        menuDtos.add(MenuDto(
             id = 3,
             name = "chips",
             price = 2000,
@@ -85,7 +83,7 @@ internal class MenuControllerTest{
     @Test
     fun getMenusHiddenIsFalse(){
         //given
-        given(menuService.getMenus(false)).willReturn(menus.filter { !it.hidden })
+        given(menuService.getMenus(false)).willReturn(menuDtos.filter { !it.hidden })
 
         //when, then
         mockMvc.perform(get("/api/menus"))
@@ -109,7 +107,7 @@ internal class MenuControllerTest{
     @Test
     fun getMenusHiddenIsTrue(){
         //given
-        given(menuService.getMenus(true)).willReturn(menus.filter { it.hidden })
+        given(menuService.getMenus(true)).willReturn(menuDtos.filter { it.hidden })
 
         //when, then
         mockMvc.perform(get("/api/menus?hidden=true"))
@@ -123,7 +121,7 @@ internal class MenuControllerTest{
     fun getExistedMenuDetailHiddenIsFalse(){
         //given
         val id = 1
-        given(menuService.getMenuDetail(id, false)).willReturn(menus[0])
+        given(menuService.getMenuDetail(id, false)).willReturn(menuDtos[0])
 
         //when, then
         mockMvc.perform(get("/api/menus/$id"))
@@ -147,7 +145,7 @@ internal class MenuControllerTest{
     fun getExistedMenuDetailHiddenIsTrue(){
         //given
         val id = 3
-        given(menuService.getMenuDetail(id, true)).willReturn(menus[2])
+        given(menuService.getMenuDetail(id, true)).willReturn(menuDtos[2])
 
         //when, then
         mockMvc.perform(get("/api/menus/$id?hidden=true"))

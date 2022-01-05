@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.then
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -28,7 +29,7 @@ internal class MenuServiceTest {
     @MockBean
     private lateinit var menuRepository: MenuRepository
 
-    val menus = ArrayList<Menu>()
+    private val menus = mutableListOf<Menu>()
 
     private fun <T> any(): T {
         return Mockito.any()
@@ -36,10 +37,10 @@ internal class MenuServiceTest {
 
     @BeforeEach
     fun setup(){
-        setMenu()
+        setMenus()
     }
 
-    private fun setMenu(){
+    private fun setMenus(){
         menus.add(Menu(
             id = 1,
             name = "hamburger",

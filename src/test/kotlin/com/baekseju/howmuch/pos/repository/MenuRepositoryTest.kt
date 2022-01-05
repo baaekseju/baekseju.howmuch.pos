@@ -53,16 +53,6 @@ internal class MenuRepositoryTest {
     }
 
     @Test
-    fun cantFindByIdAndHiddenAndDeletedAtIsNull(){
-
-        //when
-        val result = menuRepository.findByIdAndHiddenAndDeletedAtIsNull(999, false)
-
-        //then
-        assertThat(result).isNull()
-    }
-
-    @Test
     fun save(){
         //given
         val menu = Menu(

@@ -1,6 +1,5 @@
 package com.baekseju.howmuch.pos.dto
 
-import com.baekseju.howmuch.pos.entity.Menu
 import com.fasterxml.jackson.annotation.JsonView
 import java.time.Instant
 
