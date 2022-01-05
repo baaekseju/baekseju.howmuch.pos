@@ -1,5 +1,6 @@
 package com.baekseju.howmuch.pos.service
 
+import com.baekseju.howmuch.pos.dto.SetMenuDto
 import com.baekseju.howmuch.pos.entity.SetMenu
 import com.baekseju.howmuch.pos.repository.SetMenuRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -116,5 +117,33 @@ internal class SetMenuServiceTest {
         assertThatThrownBy { setMenuService.getSetMenu(id) }
             .isInstanceOf(EntityNotFoundException::class.java)
         then(setMenuRepository).should().findById(id)
+    }
+
+    @Test
+    fun addMenu() {
+        val id = 1
+        val setMenuDtoMock = SetMenuDto(
+            name = "hamburger set",
+            price = 9900,
+            imageUrl = "https://via.placeholder.com/200x200",
+            hidden = false,
+        )
+        given(setMenuRepository.save(any())).will {
+            val setMenu: SetMenu = it.getArgument(0)
+            SetMenu(
+                id = id,
+                name = setMenu.name,
+                price = setMenu.price,
+                imageUrl = setMenu.imageUrl,
+                hidden = setMenu.hidden,
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
+            )
+        }
+
+        val setMenuDto = setMenuService.addMenu(setMenuDtoMock)
+
+        then(setMenuRepository).should().save(any())
+        assertThat(setMenuDto.id).isEqualTo(id)
     }
 }

@@ -2,6 +2,7 @@ package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.SetMenuDto
 import com.baekseju.howmuch.pos.service.SetMenuService
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,5 +17,11 @@ class SetMenuController(val setMenuService: SetMenuService) {
     @GetMapping("/{setMenuId}")
     fun getSetMenu(@PathVariable setMenuId: Int): SetMenuDto {
         return setMenuService.getSetMenu(setMenuId)
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    fun addMenu(@RequestBody setMenu: SetMenuDto): SetMenuDto {
+        return setMenuService.addMenu(setMenu)
     }
 }

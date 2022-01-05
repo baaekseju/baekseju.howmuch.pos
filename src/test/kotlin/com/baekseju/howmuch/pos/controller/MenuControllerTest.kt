@@ -169,7 +169,7 @@ internal class MenuControllerTest {
     }
 
     @Test
-    fun postMenuWithValidData() {
+    fun addMenuWithValidData() {
         //given
         val id = 1
         given(menuService.addMenu(any())).will {
@@ -202,7 +202,7 @@ internal class MenuControllerTest {
     }
 
     @Test
-    fun postMenuWithInvalidData() {
+    fun addMenuWithInvalidData() {
 
     }
 

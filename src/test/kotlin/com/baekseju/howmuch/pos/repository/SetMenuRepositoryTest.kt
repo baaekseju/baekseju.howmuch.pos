@@ -63,4 +63,20 @@ internal class SetMenuRepositoryTest {
         //then
         assertThat(setMenus.size).isEqualTo(1)
     }
+
+    @Test
+    fun save() {
+        val setMenu = SetMenu(
+            name = "hamburger set",
+            price = 9900,
+            imageUrl = "https://via.placeholder.com/200x200",
+            hidden = false
+        )
+
+        val savedSetMenu = setMenuRepository.save(setMenu)
+
+        assertThat(savedSetMenu.id).isNotNull
+        assertThat(savedSetMenu.createdAt).isNotNull
+        assertThat(savedSetMenu.updatedAt).isNotNull
+    }
 }

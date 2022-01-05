@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
@@ -129,5 +131,35 @@ internal class SetMenuControllerTest {
             .andExpect(jsonPath("$.message").value(errorMsg))
 
         then(setMenuService).should().getSetMenu(id)
+    }
+
+    @Test
+    fun addSetMenuWithValidDate() {
+        val id = 1
+        val url = "/api/setmenus"
+        given(setMenuService.addMenu(any())).will {
+            val setMenuDto: SetMenuDto = it.getArgument(0)
+            SetMenuDto(
+                id = id,
+                name = setMenuDto.name,
+                price = setMenuDto.price,
+                imageUrl = setMenuDto.imageUrl,
+                hidden = setMenuDto.hidden
+            )
+        }
+
+        mockMvc.perform(post(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"name\": \"hamburger set\", \"price\": 9900, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"hidden\": false}"))
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.id").value(id))
+            .andExpect(jsonPath("$.name").value("hamburger set"))
+
+        then(setMenuService).should().addMenu(any())
+    }
+
+    @Test
+    fun addSetMenuWithInvalidDate() {
+
     }
 }
