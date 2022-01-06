@@ -7,8 +7,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.BDDMockito
 import org.mockito.BDDMockito.*
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -30,7 +30,7 @@ internal class MenuServiceTest {
     private val menus = mutableListOf<Menu>()
 
     private fun <T> any(): T {
-        return Mockito.any()
+        return BDDMockito.any()
     }
 
     @BeforeEach
@@ -117,7 +117,7 @@ internal class MenuServiceTest {
     }
 
     @Test
-    fun getExistMenuDetail() {
+    fun getMenu() {
         //given
         val id = 1
         given(menuRepository.findById(id)).willReturn(Optional.of(menus.first { menu -> menu.id == id }))
@@ -131,7 +131,7 @@ internal class MenuServiceTest {
     }
 
     @Test
-    fun getNotExistMenuDetail() {
+    fun getNotExistMenu() {
         //given
         val id = 999
         given(menuRepository.findById(id)).willReturn(Optional.empty())
@@ -180,7 +180,7 @@ internal class MenuServiceTest {
     }
 
     @Test
-    fun updateExistMenu() {
+    fun updateMenu() {
         //given
         val id = 1
         given(menuRepository.findById(id)).willReturn(Optional.of(menus.first { it.id == id }))
@@ -199,12 +199,12 @@ internal class MenuServiceTest {
 
         //then
         then(menuRepository).should().save(any())
-        assertThat(menuDto.price).isEqualTo(10000)
-        assertThat(menuDto.imageUrl).isEqualTo("https://via.placeholder.com/300x300")
-        assertThat(menuDto.additionalPrice).isEqualTo(1000)
-        assertThat(menuDto.categoryId).isEqualTo(100)
-        assertThat(menuDto.stock).isEqualTo(500)
-        assertThat(menuDto.hidden).isFalse
+        assertThat(menuDto.price).isEqualTo(menuDtoMock.price)
+        assertThat(menuDto.imageUrl).isEqualTo(menuDtoMock.imageUrl)
+        assertThat(menuDto.additionalPrice).isEqualTo(menuDtoMock.additionalPrice)
+        assertThat(menuDto.categoryId).isEqualTo(menuDtoMock.categoryId)
+        assertThat(menuDto.stock).isEqualTo(menuDtoMock.stock)
+        assertThat(menuDto.hidden).isEqualTo(menuDtoMock.hidden)
     }
 
     @Test

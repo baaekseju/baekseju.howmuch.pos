@@ -5,9 +5,9 @@ import com.baekseju.howmuch.pos.service.SetMenuService
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.then
-import org.mockito.Mockito
+import org.mockito.ArgumentMatchers.eq
+import org.mockito.BDDMockito
+import org.mockito.BDDMockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -15,8 +15,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
@@ -34,7 +33,7 @@ internal class SetMenuControllerTest {
     private val setMenuDtos = mutableListOf<SetMenuDto>()
 
     private fun <T> any(): T {
-        return Mockito.any()
+        return BDDMockito.any()
     }
 
     @BeforeEach
@@ -103,7 +102,7 @@ internal class SetMenuControllerTest {
     }
 
     @Test
-    fun getExistSetMenu() {
+    fun getSetMenu() {
         val id = 1
         val url = "/api/setmenus/$id"
         given(setMenuService.getSetMenu(id)).willReturn(setMenuDtos.first { it.id == id })
@@ -134,7 +133,7 @@ internal class SetMenuControllerTest {
     }
 
     @Test
-    fun addSetMenuWithValidDate() {
+    fun addSetMenu() {
         val id = 1
         val url = "/api/setmenus"
         given(setMenuService.addMenu(any())).will {
@@ -148,9 +147,11 @@ internal class SetMenuControllerTest {
             )
         }
 
-        mockMvc.perform(post(url)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"name\": \"hamburger set\", \"price\": 9900, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"hidden\": false}"))
+        mockMvc.perform(
+            post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"hamburger set\", \"price\": 9900, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"hidden\": false}")
+        )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(id))
             .andExpect(jsonPath("$.name").value("hamburger set"))
@@ -159,7 +160,75 @@ internal class SetMenuControllerTest {
     }
 
     @Test
-    fun addSetMenuWithInvalidDate() {
+    fun addSetMenuWithInvalidData() {
+
+    }
+
+    @Test
+    fun putSetMenu() {
+        val id = 1
+        val url = "/api/setmenus/$id"
+        given(setMenuService.updateSetMenu(eq(id), any())).will {
+            val setMenuDto: SetMenuDto = it.getArgument(1)
+            SetMenuDto(
+                id = id,
+                name = setMenuDto.name,
+                price = setMenuDto.price,
+                imageUrl = setMenuDto.imageUrl,
+                hidden = setMenuDto.hidden
+            )
+        }
+
+        mockMvc.perform(
+            put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"burger set\", \"price\": 11900, \"imageUrl\": \"https://via.placeholder.com/300x300\", \"hidden\": false}")
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(id))
+
+        then(setMenuService).should().updateSetMenu(eq(id), any())
+    }
+
+    @Test
+    fun putSetMenuWithInValidData() {
+
+    }
+
+    @Test
+    fun putNotExistSetMenu() {
+        val id = 1
+        val url = "/api/setmenus/$id"
+        val errorMsg = "setmenu not found"
+        given(setMenuService.updateSetMenu(eq(id), any())).willThrow(EntityNotFoundException(errorMsg))
+
+        mockMvc.perform(
+            put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"burger set\", \"price\": 11900, \"imageUrl\": \"https://via.placeholder.com/300x300\", \"hidden\": false}")
+        )
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.timeStamp").exists())
+            .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
+            .andExpect(jsonPath("$.path").value(url))
+            .andExpect(jsonPath("$.message").value(errorMsg))
+
+        then(setMenuService).should().updateSetMenu(eq(id), any())
+    }
+
+    @Test
+    fun softDeleteSetMenu() {
+
+    }
+
+    @Test
+    fun forceDeleteSetMenu() {
+
+    }
+
+    @Test
+    fun deleteNotExistSetMenu() {
 
     }
 }

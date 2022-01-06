@@ -7,8 +7,8 @@ import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.eq
+import org.mockito.BDDMockito
 import org.mockito.BDDMockito.*
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -19,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import java.time.Instant
 import javax.persistence.EntityNotFoundException
 
@@ -33,7 +32,7 @@ internal class MenuControllerTest {
     private lateinit var menuService: MenuService
 
     private fun <T> any(): T {
-        return Mockito.any()
+        return BDDMockito.any()
     }
 
     private val menuDtos = mutableListOf<MenuDto>()
@@ -178,7 +177,7 @@ internal class MenuControllerTest {
                 id = id,
                 name = menuDto.name,
                 price = menuDto.price,
-                imageUrl = "https://via.placeholder.com/200x200",
+                imageUrl = menuDto.imageUrl,
                 additionalPrice = menuDto.additionalPrice,
                 categoryId = menuDto.categoryId,
                 stock = menuDto.stock,
@@ -226,13 +225,29 @@ internal class MenuControllerTest {
     @Test
     fun putExistMenu() {
         val id = 1
+        given(menuService.updateMenu(eq(id), any())).will {
+            val menuDto: MenuDto = it.getArgument(1)
+            MenuDto(
+                id = id,
+                name = menuDto.name,
+                price = menuDto.price,
+                imageUrl = menuDto.imageUrl,
+                additionalPrice = menuDto.additionalPrice,
+                categoryId = menuDto.categoryId,
+                stock = menuDto.stock,
+                hidden = menuDto.hidden,
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
+            )
+        }
+
         mockMvc.perform(
             put("/api/menus/$id")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"hamburger\", \"price\": 10000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 1000, \"categoryId\": 1, \"stock\": 500, \"hidden\": false}")
         )
             .andExpect(status().isOk)
-            .andDo(print())
+            .andExpect(jsonPath("$.id").value(id))
 
         then(menuService).should().updateMenu(eq(id), any())
     }

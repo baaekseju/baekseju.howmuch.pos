@@ -7,9 +7,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.then
-import org.mockito.Mockito
+import org.mockito.BDDMockito
+import org.mockito.BDDMockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -30,7 +29,7 @@ internal class SetMenuServiceTest {
     private val setMenus = mutableListOf<SetMenu>()
 
     private fun <T> any(): T {
-        return Mockito.any()
+        return BDDMockito.any()
     }
 
     @BeforeEach
@@ -120,7 +119,7 @@ internal class SetMenuServiceTest {
     }
 
     @Test
-    fun addMenu() {
+    fun addSetMenu() {
         val id = 1
         val setMenuDtoMock = SetMenuDto(
             name = "hamburger set",
@@ -145,5 +144,41 @@ internal class SetMenuServiceTest {
 
         then(setMenuRepository).should().save(any())
         assertThat(setMenuDto.id).isEqualTo(id)
+    }
+
+    @Test
+    fun updateSetMenu() {
+        val id = 1
+        given(setMenuRepository.findById(id)).willReturn(Optional.of(setMenus.first { it.id == id }))
+        val setMenuDtoMock = SetMenuDto(
+            name = "burger set",
+            price = 11900,
+            imageUrl = "https://via.placeholder.com/300x300",
+            hidden = false,
+        )
+
+        val setMenuDto = setMenuService.updateSetMenu(id, setMenuDtoMock)
+
+        then(setMenuRepository).should().save(any())
+        assertThat(setMenuDto.name).isEqualTo(setMenuDtoMock.name)
+        assertThat(setMenuDto.price).isEqualTo(setMenuDtoMock.price)
+        assertThat(setMenuDto.imageUrl).isEqualTo(setMenuDtoMock.imageUrl)
+        assertThat(setMenuDto.hidden).isEqualTo(setMenuDtoMock.hidden)
+    }
+
+    @Test
+    fun updateNotExistSetMenu() {
+        val id = 999
+        given(setMenuRepository.findById(id)).willReturn(Optional.empty())
+        val setMenuDtoMock = SetMenuDto(
+            name = "burger set",
+            price = 11900,
+            imageUrl = "https://via.placeholder.com/300x300",
+            hidden = false,
+        )
+
+        assertThatThrownBy { setMenuService.updateSetMenu(id, setMenuDtoMock) }
+            .isInstanceOf(EntityNotFoundException::class.java)
+        then(setMenuRepository).should(never()).save(any())
     }
 }

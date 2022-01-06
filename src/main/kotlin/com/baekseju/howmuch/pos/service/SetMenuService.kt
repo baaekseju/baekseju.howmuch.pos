@@ -22,4 +22,11 @@ class SetMenuService(val setMenuRepository: SetMenuRepository, val setMenuMapper
         val setMenu = setMenuRepository.save(setMenuMapper.toEntity(setMenuDto))
         return setMenuMapper.toDto(setMenu)
     }
+
+    fun updateSetMenu(setMenuId: Int, setMenuDto: SetMenuDto): SetMenuDto {
+        val setMenu = setMenuRepository.findById(setMenuId).orElse(null) ?: throw EntityNotFoundException()
+        setMenu.updateSetMenu(setMenuDto)
+        setMenuRepository.save(setMenu)
+        return setMenuMapper.toDto(setMenu)
+    }
 }

@@ -24,4 +24,9 @@ class SetMenuController(val setMenuService: SetMenuService) {
     fun addMenu(@RequestBody setMenu: SetMenuDto): SetMenuDto {
         return setMenuService.addMenu(setMenu)
     }
+
+    @PutMapping("/{setMenuId}")
+    fun putSetMenu(@PathVariable setMenuId: Int, @RequestBody setMenu: SetMenuDto): SetMenuDto {
+        return setMenuService.updateSetMenu(setMenuId, setMenu)
+    }
 }
