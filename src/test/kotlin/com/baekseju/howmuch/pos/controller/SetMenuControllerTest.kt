@@ -208,10 +208,6 @@ internal class SetMenuControllerTest {
                 .content("{\"name\": \"burger set\", \"price\": 11900, \"imageUrl\": \"https://via.placeholder.com/300x300\", \"hidden\": false}")
         )
             .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.timeStamp").exists())
-            .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
-            .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
-            .andExpect(jsonPath("$.path").value(url))
             .andExpect(jsonPath("$.message").value(errorMsg))
 
         then(setMenuService).should().updateSetMenu(eq(id), any())
@@ -219,16 +215,35 @@ internal class SetMenuControllerTest {
 
     @Test
     fun softDeleteSetMenu() {
+        val id = 1
+        val url = "/api/setmenus/$id"
 
+        mockMvc.perform(delete(url)).andExpect(status().isOk)
+
+        then(setMenuService).should().deleteSetMenu(id, false)
     }
 
     @Test
     fun forceDeleteSetMenu() {
+        val id = 1
+        val url = "/api/setmenus/$id?force=true"
 
+        mockMvc.perform(delete(url)).andExpect(status().isOk)
+
+        then(setMenuService).should().deleteSetMenu(id, true)
     }
 
     @Test
     fun deleteNotExistSetMenu() {
+        val id = 999
+        val url = "/api/setmenus/$id"
+        val errorMsg = "setmenu not found"
+        given(setMenuService.deleteSetMenu(id, false)).willThrow(EntityNotFoundException(errorMsg))
 
+        mockMvc.perform(delete(url))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.message").value(errorMsg))
+
+        then(setMenuService).should().deleteSetMenu(id, false)
     }
 }

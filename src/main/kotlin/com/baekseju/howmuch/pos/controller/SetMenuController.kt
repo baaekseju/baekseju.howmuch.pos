@@ -29,4 +29,9 @@ class SetMenuController(val setMenuService: SetMenuService) {
     fun putSetMenu(@PathVariable setMenuId: Int, @RequestBody setMenu: SetMenuDto): SetMenuDto {
         return setMenuService.updateSetMenu(setMenuId, setMenu)
     }
+
+    @DeleteMapping("/{setMenuId}")
+    fun deleteSetMenu(@PathVariable setMenuId: Int, @RequestParam(defaultValue = "false") force: Boolean): String {
+        return setMenuService.deleteSetMenu(setMenuId, force)
+    }
 }

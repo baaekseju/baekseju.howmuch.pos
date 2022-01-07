@@ -101,49 +101,47 @@ internal class MenuRepositoryTest {
     @Test
     fun softDelete() {
         //given
-        val menu = Menu(
-            name = "hamburger",
-            price = 5000,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 500,
-            categoryId = 100,
-            stock = 50,
-            hidden = false
+        val menu = menuRepository.save(
+            Menu(
+                name = "hamburger",
+                price = 5000,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 500,
+                categoryId = 100,
+                stock = 50,
+                hidden = false
+            )
         )
-        val savedMenu = menuRepository.save(menu)
-        val id = savedMenu.id!!
 
         //when
-        savedMenu.softDelete()
-        menuRepository.save(savedMenu)
+        menu.softDelete()
+        val softDeletedMenu = menuRepository.save(menu)
 
         //then
-        val softDeletedMenu = menuRepository.findById(id)
-        assertThat(softDeletedMenu.isPresent).isTrue
-        assertThat(softDeletedMenu.get().deletedAt).isNotNull
+        assertThat(softDeletedMenu.deletedAt).isNotNull
     }
 
     @Test
     fun forceDelete() {
         //given
-        val menu = Menu(
-            name = "hamburger",
-            price = 5000,
-            imageUrl = "https://via.placeholder.com/200x200",
-            additionalPrice = 500,
-            categoryId = 100,
-            stock = 50,
-            hidden = false
+        val menu = menuRepository.save(
+            Menu(
+                name = "hamburger",
+                price = 5000,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = 500,
+                categoryId = 100,
+                stock = 50,
+                hidden = false
+            )
         )
-        val savedMenu = menuRepository.save(menu)
-        val id = savedMenu.id!!
+        val id = menu.id!!
 
         //when
-        menuRepository.delete(savedMenu)
+        menuRepository.delete(menu)
 
         //then
         val softDeletedMenu = menuRepository.findById(id)
         assertThat(softDeletedMenu.isEmpty).isTrue
-
     }
 }

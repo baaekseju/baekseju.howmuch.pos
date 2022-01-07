@@ -109,4 +109,39 @@ internal class SetMenuRepositoryTest {
         assertThat(setMenu.createdAt).isEqualTo(updatedSetMenu.createdAt)
         assertThat(setMenu.updatedAt).isNotEqualTo(updatedSetMenu.updatedAt)
     }
+
+    @Test
+    fun softDelete() {
+        val setMenu = setMenuRepository.save(
+            SetMenu(
+                name = "hamburger set",
+                price = 9900,
+                imageUrl = "https://via.placeholder.com/200x200",
+                hidden = false
+            )
+        )
+
+        setMenu.softDelete()
+        val softDeletedSetMenu = setMenuRepository.save(setMenu)
+
+        assertThat(softDeletedSetMenu.deletedAt).isNotNull
+    }
+
+    @Test
+    fun forceDelete() {
+        val setMenu = setMenuRepository.save(
+            SetMenu(
+                name = "hamburger set",
+                price = 9900,
+                imageUrl = "https://via.placeholder.com/200x200",
+                hidden = false
+            )
+        )
+        val id = setMenu.id!!
+
+        setMenuRepository.delete(setMenu)
+
+        val forceDeletedSetMenu = setMenuRepository.findById(id)
+        assertThat(forceDeletedSetMenu.isEmpty).isTrue
+    }
 }

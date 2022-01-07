@@ -245,7 +245,7 @@ internal class MenuServiceTest {
 
         val result = menuService.deleteMenu(id, true)
 
-        then(menuRepository.delete(any()))
+        then(menuRepository).should().delete(any())
         assertThat(result).isEqualTo("force delete success")
     }
 

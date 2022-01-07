@@ -29,4 +29,16 @@ class SetMenuService(val setMenuRepository: SetMenuRepository, val setMenuMapper
         setMenuRepository.save(setMenu)
         return setMenuMapper.toDto(setMenu)
     }
+
+    fun deleteSetMenu(setMenuId: Int, force: Boolean): String {
+        val setMenu = setMenuRepository.findById(setMenuId).orElse(null) ?: throw EntityNotFoundException()
+        return if (force) {
+            setMenuRepository.delete(setMenu)
+            "force delete success"
+        } else {
+            setMenu.softDelete()
+            setMenuRepository.save(setMenu)
+            "soft delete success"
+        }
+    }
 }

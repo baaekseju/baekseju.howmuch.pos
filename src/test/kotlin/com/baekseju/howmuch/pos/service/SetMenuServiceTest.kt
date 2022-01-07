@@ -181,4 +181,37 @@ internal class SetMenuServiceTest {
             .isInstanceOf(EntityNotFoundException::class.java)
         then(setMenuRepository).should(never()).save(any())
     }
+
+    @Test
+    fun softDeleteSetMenu() {
+        val id = 1
+        given(setMenuRepository.findById(id)).willReturn(Optional.of(setMenus.first { it.id == id }))
+
+        val result = setMenuService.deleteSetMenu(id, false)
+
+        then(setMenuRepository).should().save(any())
+        assertThat(result).isEqualTo("soft delete success")
+    }
+
+    @Test
+    fun forceDeleteSetMenu() {
+        val id = 1
+        given(setMenuRepository.findById(id)).willReturn(Optional.of(setMenus.first { it.id == id }))
+
+        val result = setMenuService.deleteSetMenu(id, true)
+
+        then(setMenuRepository).should().delete(any())
+        assertThat(result).isEqualTo("force delete success")
+    }
+
+    @Test
+    fun deleteNotExistSetMenu() {
+        val id = 999
+        given(setMenuRepository.findById(id)).willReturn(Optional.empty())
+
+        assertThatThrownBy { setMenuService.deleteSetMenu(id, true) }
+            .isInstanceOf(EntityNotFoundException::class.java)
+        then(setMenuRepository).should(never()).delete(any())
+        then(setMenuRepository).should(never()).save(any())
+    }
 }
