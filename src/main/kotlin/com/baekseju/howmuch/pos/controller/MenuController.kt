@@ -21,7 +21,7 @@ class MenuController(
 
     @GetMapping("/{menuId}")
     @JsonView(MenuJsonView.Detail::class)
-    fun getMenuDetail(@PathVariable menuId: Int): MenuDto {
+    fun getMenu(@PathVariable menuId: Int): MenuDto {
         return menuService.getMenu(menuId)
     }
 
