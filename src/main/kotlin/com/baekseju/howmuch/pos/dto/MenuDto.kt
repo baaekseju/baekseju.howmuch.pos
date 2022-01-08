@@ -1,6 +1,5 @@
 package com.baekseju.howmuch.pos.dto
 
-import com.baekseju.howmuch.pos.entity.Menu
 import com.fasterxml.jackson.annotation.JsonView
 import java.time.Instant
 
@@ -11,6 +10,8 @@ class MenuDto(
     var name: String,
     @JsonView(MenuJsonView.Simple::class)
     var price: Int,
+    @JsonView(MenuJsonView.Simple::class)
+    var imageUrl: String,
     @JsonView(MenuJsonView.Simple::class)
     var additionalPrice: Int,
     @JsonView(MenuJsonView.Detail::class)

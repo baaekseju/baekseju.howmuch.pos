@@ -10,35 +10,35 @@ import javax.persistence.EntityNotFoundException
 class MenuService(val menuRepository: MenuRepository, val menuMapper: MenuMapper) {
 
     fun getMenus(hidden: Boolean): List<MenuDto> {
-        val menuEntities = menuRepository.findAllByHiddenAndDeletedAtIsNull(hidden)
-        return menuMapper.toDtos(menuEntities)
+        val menus = menuRepository.findAllByHiddenAndDeletedAtIsNull(hidden)
+        return menuMapper.toDtos(menus)
     }
 
-    fun getMenuDetail(menuId: Int, hidden: Boolean): MenuDto {
-        val menuEntity = menuRepository.findByIdAndHiddenAndDeletedAtIsNull(menuId, hidden) ?: throw EntityNotFoundException()
-        return menuMapper.toDto(menuEntity)
+    fun getMenu(menuId: Int): MenuDto {
+        val menu = menuRepository.findById(menuId).orElse(null) ?: throw EntityNotFoundException()
+        return menuMapper.toDto(menu)
     }
 
     fun addMenu(menuDto: MenuDto): MenuDto {
-        val menuEntity = menuRepository.save(menuMapper.toEntity(menuDto))
-        return menuMapper.toDto(menuEntity)
+        val menu = menuRepository.save(menuMapper.toEntity(menuDto))
+        return menuMapper.toDto(menu)
     }
 
     fun updateMenu(menuId: Int, menuDto: MenuDto): MenuDto {
-        val menuEntity = menuRepository.findById(menuId).orElseThrow{EntityNotFoundException()}
-        menuEntity.updateMenu(menuDto)
-        menuRepository.save(menuEntity)
-        return menuMapper.toDto(menuEntity)
+        val menu = menuRepository.findById(menuId).orElse(null) ?: throw EntityNotFoundException()
+        menu.updateMenu(menuDto)
+        menuRepository.save(menu)
+        return menuMapper.toDto(menu)
     }
 
     fun deleteMenu(menuId: Int, force: Boolean): String {
-        val menuEntity = menuRepository.findById(menuId).orElseThrow{EntityNotFoundException()}
+        val menu = menuRepository.findById(menuId).orElse(null) ?: throw EntityNotFoundException()
         return if (force) {
-            menuRepository.delete(menuEntity)
+            menuRepository.delete(menu)
             "force delete success"
         } else {
-            menuEntity.softDelete()
-            menuRepository.save(menuEntity)
+            menu.softDelete()
+            menuRepository.save(menu)
             "soft delete success"
         }
     }

@@ -5,7 +5,7 @@ import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
 class SoftDeleteEntity(var deletedAt: Instant?) {
-    fun softDelete(){
+    fun softDelete() {
         deletedAt = Instant.now()
     }
 }

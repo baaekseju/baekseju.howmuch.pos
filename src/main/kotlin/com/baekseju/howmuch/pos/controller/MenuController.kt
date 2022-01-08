@@ -21,8 +21,8 @@ class MenuController(
 
     @GetMapping("/{menuId}")
     @JsonView(MenuJsonView.Detail::class)
-    fun getMenuDetail(@PathVariable menuId: Int, @RequestParam(defaultValue = "false") hidden: Boolean): MenuDto{
-        return menuService.getMenuDetail(menuId, hidden)
+    fun getMenu(@PathVariable menuId: Int): MenuDto {
+        return menuService.getMenu(menuId)
     }
 
     @PostMapping
@@ -32,12 +32,12 @@ class MenuController(
     }
 
     @PutMapping("/{menuId}")
-    fun putMenu(@PathVariable menuId: Int, @RequestBody menu: MenuDto): MenuDto{
+    fun putMenu(@PathVariable menuId: Int, @RequestBody menu: MenuDto): MenuDto {
         return menuService.updateMenu(menuId, menu)
     }
 
     @DeleteMapping("/{menuId}")
-    fun deleteMenu(@PathVariable menuId: Int, @RequestParam(defaultValue = "false") force: Boolean): String{
+    fun deleteMenu(@PathVariable menuId: Int, @RequestParam(defaultValue = "false") force: Boolean): String {
         return menuService.deleteMenu(menuId, force)
     }
 }
