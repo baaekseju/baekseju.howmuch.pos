@@ -17,7 +17,8 @@ class Menu(
     var price: Int,
     var imageUrl: String,
     var additionalPrice: Int,
-    var categoryId: Int,
+    @ManyToOne
+    var category: Category? = null,
     var stock: Int,
     var hidden: Boolean,
     @CreatedDate
@@ -26,13 +27,13 @@ class Menu(
     var updatedAt: Instant? = null,
     deletedAt: Instant? = null
 ) : SoftDeleteEntity(deletedAt) {
-    fun updateMenu(menuDto: MenuDto) {
-        name = menuDto.name
-        price = menuDto.price
-        imageUrl = menuDto.imageUrl
-        additionalPrice = menuDto.additionalPrice
-        categoryId = menuDto.categoryId
-        stock = menuDto.stock
-        hidden = menuDto.hidden
+    fun updateMenu(menuDto: MenuDto, category: Category) {
+        this.name = menuDto.name
+        this.price = menuDto.price
+        this.imageUrl = menuDto.imageUrl
+        this.additionalPrice = menuDto.additionalPrice
+        this.category = category
+        this.stock = menuDto.stock
+        this.hidden = menuDto.hidden
     }
 }

@@ -1,5 +1,6 @@
 package com.baekseju.howmuch.pos.repository
 
+import com.baekseju.howmuch.pos.entity.Category
 import com.baekseju.howmuch.pos.entity.Menu
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
@@ -12,10 +13,13 @@ import org.springframework.test.context.ActiveProfiles
 internal class MenuRepositoryTest {
     @Autowired
     private lateinit var menuRepository: MenuRepository
+    @Autowired
+    private lateinit var categoryRepository: CategoryRepository
 
     @AfterEach
     fun initDB() {
         menuRepository.deleteAll()
+        categoryRepository.deleteAll()
     }
 
     @Test
@@ -26,7 +30,6 @@ internal class MenuRepositoryTest {
                 price = 5000,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 500,
-                categoryId = 100,
                 stock = 50,
                 hidden = false
             )
@@ -37,7 +40,6 @@ internal class MenuRepositoryTest {
                 price = 1500,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 0,
-                categoryId = 103,
                 stock = 999,
                 hidden = false,
                 deletedAt = null
@@ -56,12 +58,15 @@ internal class MenuRepositoryTest {
     @Test
     fun save() {
         //given
+        val category = categoryRepository.save(Category(
+            name = "burger"
+        ))
         val menu = Menu(
             name = "hamburger",
             price = 5000,
             imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
-            categoryId = 100,
+            category = category,
             stock = 50,
             hidden = false
         )
@@ -71,6 +76,7 @@ internal class MenuRepositoryTest {
 
         //then
         assertThat(savedMenu.id).isNotNull
+        assertThat(savedMenu.category?.id).isEqualTo(category.id)
         assertThat(savedMenu.createdAt).isNotNull
         assertThat(savedMenu.updatedAt).isNotNull
     }
@@ -78,12 +84,15 @@ internal class MenuRepositoryTest {
     @Test
     fun update() {
         //given
+        val category = categoryRepository.save(Category(
+            name = "burger"
+        ))
         val menu = Menu(
             name = "hamburger",
             price = 5000,
             imageUrl = "https://via.placeholder.com/200x200",
             additionalPrice = 500,
-            categoryId = 100,
+            category = category,
             stock = 50,
             hidden = false
         )
@@ -101,13 +110,16 @@ internal class MenuRepositoryTest {
     @Test
     fun softDelete() {
         //given
+        val category = categoryRepository.save(Category(
+            name = "burger"
+        ))
         val menu = menuRepository.save(
             Menu(
                 name = "hamburger",
                 price = 5000,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 500,
-                categoryId = 100,
+                category = category,
                 stock = 50,
                 hidden = false
             )
@@ -124,13 +136,16 @@ internal class MenuRepositoryTest {
     @Test
     fun forceDelete() {
         //given
+        val category = categoryRepository.save(Category(
+            name = "burger"
+        ))
         val menu = menuRepository.save(
             Menu(
                 name = "hamburger",
                 price = 5000,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 500,
-                categoryId = 100,
+                category = category,
                 stock = 50,
                 hidden = false
             )

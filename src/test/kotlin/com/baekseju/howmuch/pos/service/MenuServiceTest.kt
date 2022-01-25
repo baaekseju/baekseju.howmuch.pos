@@ -1,7 +1,9 @@
 package com.baekseju.howmuch.pos.service
 
 import com.baekseju.howmuch.pos.dto.MenuDto
+import com.baekseju.howmuch.pos.entity.Category
 import com.baekseju.howmuch.pos.entity.Menu
+import com.baekseju.howmuch.pos.repository.CategoryRepository
 import com.baekseju.howmuch.pos.repository.MenuRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -27,7 +29,11 @@ internal class MenuServiceTest {
     @MockBean
     private lateinit var menuRepository: MenuRepository
 
+    @MockBean
+    private lateinit var categoryRepository: CategoryRepository
+
     private val menus = mutableListOf<Menu>()
+    private val categories = mutableListOf<Category>()
 
     private fun <T> any(): T {
         return BDDMockito.any()
@@ -36,6 +42,7 @@ internal class MenuServiceTest {
     @BeforeEach
     fun setup() {
         setMenus()
+        setCategories()
     }
 
     private fun setMenus() {
@@ -46,7 +53,6 @@ internal class MenuServiceTest {
                 price = 5000,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 500,
-                categoryId = 100,
                 stock = 50,
                 hidden = false,
                 createdAt = Instant.now(),
@@ -60,7 +66,6 @@ internal class MenuServiceTest {
                 price = 1500,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 0,
-                categoryId = 103,
                 stock = 999,
                 hidden = false,
                 createdAt = Instant.now(),
@@ -75,11 +80,19 @@ internal class MenuServiceTest {
                 price = 6000,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 2000,
-                categoryId = 102,
                 stock = 10,
                 hidden = true,
                 createdAt = Instant.now(),
                 updatedAt = Instant.now()
+            )
+        )
+    }
+
+    private fun setCategories() {
+        categories.add(
+            Category(
+                id = 100,
+                name = "burger"
             )
         )
     }
@@ -145,22 +158,6 @@ internal class MenuServiceTest {
     @Test
     fun addMenu() {
         //given
-        val id = 1
-        given(menuRepository.save(any())).will {
-            val menu: Menu = it.getArgument(0)
-            Menu(
-                id = id,
-                name = menu.name,
-                price = menu.price,
-                imageUrl = "https://via.placeholder.com/200x200",
-                additionalPrice = menu.additionalPrice,
-                categoryId = menu.categoryId,
-                stock = menu.stock,
-                hidden = menu.hidden,
-                createdAt = Instant.now(),
-                updatedAt = Instant.now()
-            )
-        }
         val menuDtoMock = MenuDto(
             name = "hamburger",
             price = 5000,
@@ -170,11 +167,34 @@ internal class MenuServiceTest {
             stock = 50,
             hidden = false
         )
+        given(categoryRepository.findById(menuDtoMock.categoryId)).willReturn(
+            Optional.of(
+                categories.first { category -> category.id == menuDtoMock.categoryId }
+            )
+        )
+        val id = 1
+        given(menuRepository.save(any())).will {
+            val menu: Menu = it.getArgument(0)
+            Menu(
+                id = id,
+                name = menu.name,
+                price = menu.price,
+                imageUrl = "https://via.placeholder.com/200x200",
+                additionalPrice = menu.additionalPrice,
+                category = menu.category,
+                stock = menu.stock,
+                hidden = menu.hidden,
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
+            )
+        }
+
 
         //when
         val menuDto = menuService.addMenu(menuDtoMock)
 
         //then
+        then(categoryRepository).should().findById(menuDtoMock.categoryId)
         then(menuRepository).should().save(any())
         assertThat(menuDto.id).isEqualTo(id)
     }
@@ -182,8 +202,6 @@ internal class MenuServiceTest {
     @Test
     fun updateMenu() {
         //given
-        val id = 1
-        given(menuRepository.findById(id)).willReturn(Optional.of(menus.first { it.id == id }))
         val menuDtoMock = MenuDto(
             name = "hamburger",
             price = 10000,
@@ -193,11 +211,19 @@ internal class MenuServiceTest {
             stock = 500,
             hidden = false
         )
+        given(categoryRepository.findById(menuDtoMock.categoryId)).willReturn(
+            Optional.of(
+                categories.first { category -> category.id == menuDtoMock.categoryId }
+            )
+        )
+        val id = 1
+        given(menuRepository.findById(id)).willReturn(Optional.of(menus.first { it.id == id }))
 
         //when
         val menuDto = menuService.updateMenu(id, menuDtoMock)
 
         //then
+        then(categoryRepository).should().findById(menuDtoMock.categoryId)
         then(menuRepository).should().save(any())
         assertThat(menuDto.price).isEqualTo(menuDtoMock.price)
         assertThat(menuDto.imageUrl).isEqualTo(menuDtoMock.imageUrl)
@@ -209,8 +235,6 @@ internal class MenuServiceTest {
 
     @Test
     fun updateNotExistMenu() {
-        val id = 999
-        given(menuRepository.findById(id)).willReturn(Optional.empty())
         val menuDtoMock = MenuDto(
             name = "hamburger",
             price = 10000,
@@ -220,6 +244,13 @@ internal class MenuServiceTest {
             stock = 500,
             hidden = false
         )
+        given(categoryRepository.findById(menuDtoMock.categoryId)).willReturn(
+            Optional.of(
+                categories.first { category -> category.id == menuDtoMock.categoryId }
+            )
+        )
+        val id = 999
+        given(menuRepository.findById(id)).willReturn(Optional.empty())
 
         //when, then
         assertThatThrownBy { menuService.updateMenu(id, menuDtoMock) }
