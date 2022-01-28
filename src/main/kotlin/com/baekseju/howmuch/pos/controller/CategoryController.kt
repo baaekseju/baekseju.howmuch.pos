@@ -27,7 +27,7 @@ class CategoryController(
     }
 
     @DeleteMapping("/{categoryId}")
-    fun deleteCategory(@PathVariable categoryId: Int, @RequestParam(defaultValue = "false") force: Boolean): String {
-        return categoryService.deleteCategory(categoryId, force)
+    fun deleteCategory(@PathVariable categoryId: Int): String {
+        return categoryService.deleteCategory(categoryId)
     }
 }

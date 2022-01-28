@@ -17,9 +17,8 @@ class Category(
     @CreatedDate
     var createdAt: Instant? = null,
     @LastModifiedDate
-    var updatedAt: Instant? = null,
-    deletedAt: Instant? = null
-) : SoftDeleteEntity(deletedAt) {
+    var updatedAt: Instant? = null
+) {
     fun updateCategory(categoryDto: CategoryDto) {
         name = categoryDto.name
     }

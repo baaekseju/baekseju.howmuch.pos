@@ -25,15 +25,9 @@ class CategoryService(val categoryRepository: CategoryRepository, val categoryMa
         return categoryMapper.toDto(categoryEntity)
     }
 
-    fun deleteCategory(categoryId: Int, force: Boolean): String {
+    fun deleteCategory(categoryId: Int): String {
         val categoryEntity = categoryRepository.findById(categoryId).orElse(null) ?: throw EntityNotFoundException()
-        return if (force) {
-            categoryRepository.delete(categoryEntity)
-            "force delete success"
-        } else {
-            categoryEntity.softDelete()
-            categoryRepository.save(categoryEntity)
-            "soft delete success"
-        }
+        categoryRepository.delete(categoryEntity)
+        return "force delete success"
     }
 }
