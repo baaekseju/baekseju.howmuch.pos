@@ -6,6 +6,8 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: validate
+  config:
+    import: file:./src/main/resources/config/secret.yml
 
 server:
   port: 8001
