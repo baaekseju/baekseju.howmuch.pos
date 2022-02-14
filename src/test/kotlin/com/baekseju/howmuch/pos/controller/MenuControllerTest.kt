@@ -15,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageNotReadableException
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
@@ -23,7 +22,6 @@ import java.time.Instant
 import javax.persistence.EntityNotFoundException
 
 @WebMvcTest(MenuController::class)
-@ActiveProfiles("dev")
 internal class MenuControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc

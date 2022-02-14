@@ -9,17 +9,16 @@ import javax.persistence.*
 
 @Entity
 @EntityListeners(value = [AuditingEntityListener::class])
-class Category (
+class Category(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id : Int? = null,
-    var name : String,
+    val id: Int? = null,
+    var name: String,
     @CreatedDate
-    var createdAt : Instant? = null,
+    var createdAt: Instant? = null,
     @LastModifiedDate
-    var updatedAt: Instant? = null,
-    deletedAt: Instant? = null
-): SoftDeleteEntity(deletedAt) {
+    var updatedAt: Instant? = null
+) {
     fun updateCategory(categoryDto: CategoryDto) {
         name = categoryDto.name
     }

@@ -8,5 +8,5 @@ import org.mapstruct.Mapper
 interface CategoryMapper {
     fun toEntity(categoryDto: CategoryDto): Category
     fun toDto(category: Category): CategoryDto
-    fun toDtos(categorys: List<Category>): List<CategoryDto>
+    fun toDtos(categories: List<Category>): List<CategoryDto>
 }

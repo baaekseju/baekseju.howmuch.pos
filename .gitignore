@@ -38,3 +38,6 @@ out/
 
 ### ETC ###
 .java-version
+
+application-local.yml
+secret.yml
