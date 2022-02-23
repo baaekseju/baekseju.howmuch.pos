@@ -1,7 +1,10 @@
 package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.CategoryDto
+import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.service.CategoryService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -13,6 +16,11 @@ class CategoryController(
     @GetMapping
     fun getCategories(): List<CategoryDto> {
         return categoryService.getCategories()
+    }
+
+    @GetMapping("/{categoryId}/menus")
+    fun getMenusByCategory(@PathVariable categoryId: Int, pageable: Pageable): Page<MenuDto> {
+        return categoryService.getMenusByCategory(categoryId, pageable)
     }
 
     @PostMapping
