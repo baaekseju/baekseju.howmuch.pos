@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
+@CrossOrigin(origins = ["http://localhost:3001"])
 @RestController
 @RequestMapping("/api/categories")
 class CategoryController(
