@@ -7,20 +7,19 @@ import java.time.Instant
 import javax.persistence.*
 
 @Entity
-@Table(name = "`order`")
 @EntityListeners(value = [AuditingEntityListener::class])
-class Order(
+class Point(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int? = null,
-    var menus: String,
-    var price: Int,
-    var payWith: String,
+    var point: Int,
+    @OneToOne
+    var user: User,
     @CreatedDate
     var createdAt: Instant? = null,
     @LastModifiedDate
     var updatedAt: Instant? = null,
     deletedAt: Instant? = null
-) : SoftDeleteEntity(deletedAt) {
+): SoftDeleteEntity(deletedAt) {
 
 }

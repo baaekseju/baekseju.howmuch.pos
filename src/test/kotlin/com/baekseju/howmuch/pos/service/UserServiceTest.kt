@@ -1,8 +1,11 @@
 package com.baekseju.howmuch.pos.service
 
+import com.baekseju.howmuch.pos.dto.PointDto
 import com.baekseju.howmuch.pos.dto.UserDto
+import com.baekseju.howmuch.pos.entity.Point
 import com.baekseju.howmuch.pos.entity.User
 import com.baekseju.howmuch.pos.exception.UserExistException
+import com.baekseju.howmuch.pos.repository.PointRepository
 import com.baekseju.howmuch.pos.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -24,6 +27,9 @@ internal class UserServiceTest {
 
     @MockBean
     private lateinit var userRepository: UserRepository
+
+    @MockBean
+    private lateinit var pointRepository: PointRepository
 
     private val users = mutableListOf<User>()
 
@@ -99,11 +105,12 @@ internal class UserServiceTest {
 
         then(userRepository).should().findByPhoneNumber(any())
         then(userRepository).should().save(any())
+        then(pointRepository).should().save(any())
         assertThat(userDto.id).isEqualTo(userId)
     }
 
     @Test
-    fun addExistUser() {
+    fun addNotExistUser() {
         val phoneNumber = "010-1111-2222"
         given(userRepository.findByPhoneNumber(phoneNumber)).willReturn(users.first { it.phoneNumber == phoneNumber })
         val mockUserDto = UserDto(phoneNumber = "010-1111-2222")
@@ -112,5 +119,51 @@ internal class UserServiceTest {
             .isInstanceOf(UserExistException::class.java)
         then(userRepository).should().findByPhoneNumber(phoneNumber)
         then(userRepository).should(never()).save(any())
+        then(pointRepository).should(never()).save(any())
+    }
+
+    @Test
+    fun getPointByUser() {
+        val userId = 1
+        val pointId = 1
+        given(pointRepository.findByUserId(userId)).willReturn(
+            Point(
+                id = pointId,
+                point = 1000,
+                user = User(id = userId, phoneNumber = "010-1111-2222"),
+                createdAt = Instant.now(),
+                updatedAt = Instant.now()
+            )
+        )
+
+        val pointDto = userService.getPointByUser(userId)
+
+        then(pointRepository).should().findByUserId(userId)
+        assertThat(pointDto.point).isEqualTo(1000)
+    }
+
+    @Test
+    fun getPointByNotExistUser() {
+        val userId = 1
+        given(pointRepository.findByUserId(userId)).willReturn(null)
+
+        assertThatThrownBy { userService.getPointByUser(userId) }
+            .isInstanceOf(EntityNotFoundException::class.java)
+
+        then(pointRepository).should().findByUserId(userId)
+    }
+
+    @Test
+    fun addPoint() {
+        val userId = 1
+        val prevPoint = 1000
+        val willAddPoint = 500
+        val mockPointDto = PointDto(point = willAddPoint)
+
+        val pointDto = userService.addPoint(userId, mockPointDto)
+
+        then(pointRepository).should().findByUserId(userId)
+        then(pointRepository).should().save(any())
+        assertThat(pointDto.point).isEqualTo(prevPoint + willAddPoint)
     }
 }

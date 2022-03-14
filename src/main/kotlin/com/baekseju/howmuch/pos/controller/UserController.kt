@@ -1,5 +1,6 @@
 package com.baekseju.howmuch.pos.controller
 
+import com.baekseju.howmuch.pos.dto.PointDto
 import com.baekseju.howmuch.pos.dto.ResponseDto
 import com.baekseju.howmuch.pos.dto.UserDto
 import com.baekseju.howmuch.pos.service.UserService
@@ -28,6 +29,26 @@ class UserController(val userService: UserService) {
             status = HttpStatus.CREATED.value(),
             message = "",
             data = userDto
+        )
+    }
+
+    @GetMapping("/{userId}/point")
+    fun getPointByUser(@PathVariable userId: Int): ResponseDto {
+        val pointDto = userService.getPointByUser(userId)
+        return ResponseDto(
+            status = HttpStatus.OK.value(),
+            message = "",
+            data = pointDto
+        )
+    }
+
+    @PatchMapping("/{userId}/point")
+    fun patchPointByUser(@PathVariable userId: Int, @RequestBody point: PointDto): ResponseDto {
+        val pointDto = userService.addPoint(userId, point)
+        return ResponseDto(
+            status = HttpStatus.OK.value(),
+            message = "",
+            data = pointDto
         )
     }
 }
