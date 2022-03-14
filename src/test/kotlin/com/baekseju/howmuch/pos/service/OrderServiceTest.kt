@@ -29,12 +29,12 @@ internal class OrderServiceTest {
     fun addOrder(){
         val orderId = 1
         given(orderRepository.save(any())).will {
-            val orderEntity: Order = it.getArgument(0)
+            val order: Order = it.getArgument(0)
             Order(
                 id = orderId,
-                menus = orderEntity.menus,
-                price = orderEntity.price,
-                payWith = orderEntity.payWith,
+                menus = order.menus,
+                price = order.price,
+                payWith = order.payWith,
                 createdAt = Instant.now(),
                 updatedAt = Instant.now()
             )
