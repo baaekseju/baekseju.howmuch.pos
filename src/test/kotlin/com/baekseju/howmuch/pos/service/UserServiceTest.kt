@@ -156,9 +156,19 @@ internal class UserServiceTest {
     @Test
     fun addPoint() {
         val userId = 1
+        val pointId = 1
         val prevPoint = 1000
         val willAddPoint = 500
         val mockPointDto = PointDto(point = willAddPoint)
+        val point = Point(
+            id = pointId,
+            point = prevPoint,
+            user = User(id = userId, phoneNumber = "010-1111-2222"),
+            createdAt = Instant.now(),
+            updatedAt = Instant.now()
+        )
+        given(pointRepository.findByUserId(userId)).willReturn(point)
+        given(pointRepository.save(any())).willReturn(point)
 
         val pointDto = userService.addPoint(userId, mockPointDto)
 

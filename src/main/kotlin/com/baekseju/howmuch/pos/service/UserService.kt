@@ -44,9 +44,10 @@ class UserService(
     }
 
     fun addPoint(userId: Int, pointDto: PointDto): PointDto {
-        return PointDto(
-            id = 1,
-            point = 1500
-        )
+        val prevPoint = pointRepository.findByUserId(userId) ?: throw EntityNotFoundException()
+        prevPoint.point += pointDto.point
+        val point = pointRepository.save(prevPoint)
+        print(point.point)
+        return pointMapper.toDto(point)
     }
 }
