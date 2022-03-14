@@ -20,6 +20,8 @@ class Point(
     @LastModifiedDate
     var updatedAt: Instant? = null,
     deletedAt: Instant? = null
-): SoftDeleteEntity(deletedAt) {
-
+) : SoftDeleteEntity(deletedAt) {
+    fun addPoint(point: Int) {
+        this.point += point
+    }
 }
