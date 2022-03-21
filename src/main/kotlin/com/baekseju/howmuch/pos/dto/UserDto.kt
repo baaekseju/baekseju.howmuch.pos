@@ -8,5 +8,4 @@ class UserDto(
     var createdAt: Instant? = null,
     var updatedAt: Instant? = null,
     var deletedAt: Instant? = null
-) : BaseDto {
-}
+) : BaseDto

@@ -1,6 +1,5 @@
 package com.baekseju.howmuch.pos.service
 
-import com.baekseju.howmuch.pos.dto.PointDto
 import com.baekseju.howmuch.pos.dto.UserDto
 import com.baekseju.howmuch.pos.entity.Point
 import com.baekseju.howmuch.pos.entity.User
@@ -159,7 +158,6 @@ internal class UserServiceTest {
         val pointId = 1
         val prevPoint = 1000
         val willAddPoint = 500
-        val mockPointDto = PointDto(point = willAddPoint)
         val point = Point(
             id = pointId,
             point = prevPoint,
@@ -170,7 +168,7 @@ internal class UserServiceTest {
         given(pointRepository.findByUserId(userId)).willReturn(point)
         given(pointRepository.save(any())).willReturn(point)
 
-        val pointDto = userService.addPoint(userId, mockPointDto)
+        val pointDto = userService.addPoint(userId, willAddPoint)
 
         then(pointRepository).should().findByUserId(userId)
         then(pointRepository).should().save(any())

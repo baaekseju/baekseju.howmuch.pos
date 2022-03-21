@@ -18,5 +18,4 @@ class User(
     @LastModifiedDate
     var updatedAt: Instant? = null,
     deletedAt: Instant? = null
-) : SoftDeleteEntity(deletedAt) {
-}
+) : SoftDeleteEntity(deletedAt)

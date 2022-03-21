@@ -44,7 +44,7 @@ class UserController(val userService: UserService) {
 
     @PatchMapping("/{userId}/point")
     fun patchPointByUser(@PathVariable userId: Int, @RequestBody point: PointDto): ResponseDto {
-        val pointDto = userService.addPoint(userId, point)
+        val pointDto = userService.addPoint(userId, point.point)
         return ResponseDto(
             status = HttpStatus.OK.value(),
             message = "",

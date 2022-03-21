@@ -9,6 +9,7 @@ import com.baekseju.howmuch.pos.mapper.UserMapper
 import com.baekseju.howmuch.pos.repository.PointRepository
 import com.baekseju.howmuch.pos.repository.UserRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import javax.persistence.EntityNotFoundException
 
 @Service
@@ -43,11 +44,11 @@ class UserService(
         return pointMapper.toDto(point)
     }
 
-    fun addPoint(userId: Int, pointDto: PointDto): PointDto {
+    @Transactional
+    fun addPoint(userId: Int, point: Int): PointDto {
         val prevPoint = pointRepository.findByUserId(userId) ?: throw EntityNotFoundException()
-        prevPoint.addPoint(pointDto.point)
-        val point = pointRepository.save(prevPoint)
-        print(point.point)
-        return pointMapper.toDto(point)
+        prevPoint.addPoint(point)
+        val pointEntity = pointRepository.save(prevPoint)
+        return pointMapper.toDto(pointEntity)
     }
 }

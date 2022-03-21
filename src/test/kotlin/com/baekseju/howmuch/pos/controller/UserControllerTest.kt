@@ -184,7 +184,7 @@ internal class UserControllerTest {
     fun patchPointByUser() {
         val userId = 1
         val point = 500
-        given(userService.addPoint(eq(userId), any())).willReturn(
+        given(userService.addPoint(eq(userId), eq(point))).willReturn(
             PointDto(
                 id = 1,
                 point = 1500
@@ -199,14 +199,14 @@ internal class UserControllerTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
 
-        then(userService).should().addPoint(eq(userId), any())
+        then(userService).should().addPoint(eq(userId), eq(point))
     }
 
     @Test
     fun patchPointByNotExistUser() {
         val userId = 1
         val point = 500
-        given(userService.addPoint(eq(userId), any())).willThrow(EntityNotFoundException())
+        given(userService.addPoint(eq(userId), eq(point))).willThrow(EntityNotFoundException())
 
         mockMvc.perform(
             patch("/api/users/${userId}/point")
@@ -216,6 +216,6 @@ internal class UserControllerTest {
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
 
-        then(userService).should().addPoint(eq(userId), any())
+        then(userService).should().addPoint(eq(userId), eq(point))
     }
 }
