@@ -2,10 +2,8 @@ package com.baekseju.howmuch.pos.service
 
 import com.baekseju.howmuch.pos.entity.Menu
 import com.baekseju.howmuch.pos.repository.MenuRepository
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.then
 import org.springframework.beans.factory.annotation.Autowired

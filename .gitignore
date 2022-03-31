@@ -40,4 +40,5 @@ out/
 .java-version
 
 application-local.yml
+application-test.yml
 secret.yml

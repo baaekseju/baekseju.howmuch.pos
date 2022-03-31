@@ -1,6 +1,7 @@
 package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.ErrorDto
+import com.baekseju.howmuch.pos.exception.UserExistException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -23,6 +24,16 @@ class ControllerExceptionAdvice {
     @ExceptionHandler(HttpMessageNotReadableException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun httpMessageNotReadableHandler(exception: HttpMessageNotReadableException, request: HttpServletRequest) =
+        ErrorDto(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
+            path = request.requestURI,
+            message = exception.message
+        )
+
+    @ExceptionHandler(UserExistException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun userExistHandler(exception: UserExistException, request: HttpServletRequest) =
         ErrorDto(
             status = HttpStatus.BAD_REQUEST.value(),
             error = HttpStatus.BAD_REQUEST.reasonPhrase,
