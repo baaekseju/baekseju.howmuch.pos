@@ -6,7 +6,6 @@ import com.baekseju.howmuch.pos.service.OrderService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
-@CrossOrigin(origins = ["http://localhost:3001", "http://127.0.0.1:3001"])
 @RestController
 @RequestMapping("/api/orders")
 class OrderController(
