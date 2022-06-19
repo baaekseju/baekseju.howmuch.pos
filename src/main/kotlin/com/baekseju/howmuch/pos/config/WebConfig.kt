@@ -11,5 +11,8 @@ class WebConfig : WebMvcConfigurer {
             .allowedOrigins("http://localhost:3001", "http://127.0.0.1:3001")
         registry.addMapping("/api/orders/**")
             .allowedOrigins("http://localhost:3001", "http://127.0.0.1:3001")
+        registry.addMapping("/api/users/**")
+            .allowedOrigins("http://localhost:3001", "http://127.0.0.1:3001")
+            .allowedMethods("*")
     }
 }
