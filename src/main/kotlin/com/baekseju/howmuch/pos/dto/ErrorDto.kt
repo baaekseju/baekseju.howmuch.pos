@@ -9,5 +9,5 @@ class ErrorDto(
     val status: Int,
     val error: String,
     val path: String,
-    val message: String?
+    val messages: ArrayList<String?> = ArrayList()
 )

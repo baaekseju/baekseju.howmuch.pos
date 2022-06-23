@@ -79,7 +79,7 @@ internal class UserControllerTest {
         val phoneNumber = "010-1111-2222"
         given(userService.getUserByPhoneNumber(any())).willReturn(userDtos.first { it.phoneNumber == phoneNumber })
 
-        mockMvc.perform(get("/api/users?phoneNumber=${phoneNumber}"))
+        mockMvc.perform(get("/api/users?phone-number=${phoneNumber}"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
             .andExpect(jsonPath("$.data.phoneNumber").value(phoneNumber))
@@ -93,12 +93,12 @@ internal class UserControllerTest {
         val errorMsg = "존재하지 않은 번호입니다."
         given(userService.getUserByPhoneNumber(phoneNumber)).willThrow(EntityNotFoundException(errorMsg))
 
-        mockMvc.perform(get("/api/users?phoneNumber=${phoneNumber}"))
+        mockMvc.perform(get("/api/users?phone-number=${phoneNumber}"))
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/users"))
-            .andExpect(jsonPath("$.message").value(errorMsg))
+            .andExpect(jsonPath("$.messages[0]").value(errorMsg))
 
         then(userService).should().getUserByPhoneNumber(any())
     }
@@ -142,7 +142,7 @@ internal class UserControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/users"))
-            .andExpect(jsonPath("$.message").value("입력하신 ${phoneNumber}는 이미 가입된 번호입니다."))
+            .andExpect(jsonPath("$.messages[0]").value("입력하신 ${phoneNumber}는 이미 가입된 번호입니다."))
 
         then(userService).should().addUser(any())
     }

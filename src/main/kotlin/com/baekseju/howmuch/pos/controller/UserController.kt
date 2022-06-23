@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 class UserController(val userService: UserService) {
 
     @GetMapping
-    fun getUserByPhoneNumber(@RequestParam phoneNumber: String): ResponseDto {
+    fun getUserByPhoneNumber(@RequestParam("phone-number") phoneNumber: String): ResponseDto {
         val userDto = userService.getUserByPhoneNumber(phoneNumber)
         return ResponseDto(
             status = HttpStatus.OK.value(),

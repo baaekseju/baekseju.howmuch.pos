@@ -160,13 +160,13 @@ internal class MenuControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/menus/$id"))
-            .andExpect(jsonPath("$.message").value(errorMsg))
+            .andExpect(jsonPath("$.messages[0]").value(errorMsg))
 
         then(menuService).should().getMenu(id)
     }
 
     @Test
-    fun addMenuWithValidData() {
+    fun addMenu() {
         //given
         val id = 1
         given(menuService.addMenu(any())).will {
@@ -217,7 +217,7 @@ internal class MenuControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/menus"))
-            .andExpect(jsonPath("$.message").exists())
+            .andExpect(jsonPath("$.messages[0]").exists())
     }
 
     @Test

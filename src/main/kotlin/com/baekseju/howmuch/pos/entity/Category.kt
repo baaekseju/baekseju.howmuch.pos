@@ -13,7 +13,7 @@ class Category(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int? = null,
-    var name: String,
+    var name: String?,
     @CreatedDate
     var createdAt: Instant? = null,
     @LastModifiedDate
