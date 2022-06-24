@@ -6,6 +6,7 @@ import com.baekseju.howmuch.pos.service.MenuService
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/menus")
@@ -27,12 +28,12 @@ class MenuController(
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun addMenu(@RequestBody menu: MenuDto): MenuDto {
+    fun addMenu(@Valid @RequestBody menu: MenuDto): MenuDto {
         return menuService.addMenu(menu)
     }
 
     @PutMapping("/{menuId}")
-    fun putMenu(@PathVariable menuId: Int, @RequestBody menu: MenuDto): MenuDto {
+    fun putMenu(@PathVariable menuId: Int, @Valid @RequestBody menu: MenuDto): MenuDto {
         return menuService.updateMenu(menuId, menu)
     }
 

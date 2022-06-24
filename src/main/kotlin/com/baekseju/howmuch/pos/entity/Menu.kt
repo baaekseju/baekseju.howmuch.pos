@@ -28,12 +28,12 @@ class Menu(
     deletedAt: Instant? = null
 ) : SoftDeleteEntity(deletedAt) {
     fun updateMenu(menuDto: MenuDto, category: Category) {
-        this.name = menuDto.name
-        this.price = menuDto.price
-        this.imageUrl = menuDto.imageUrl
-        this.additionalPrice = menuDto.additionalPrice
+        this.name = menuDto.name!!
+        this.price = menuDto.price!!
+        this.imageUrl = menuDto.imageUrl!!
+        this.additionalPrice = menuDto.additionalPrice!!
         this.category = category
-        this.stock = menuDto.stock
-        this.hidden = menuDto.hidden
+        this.stock = menuDto.stock!!
+        this.hidden = menuDto.hidden!!
     }
 }

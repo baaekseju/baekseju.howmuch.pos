@@ -165,7 +165,7 @@ internal class MenuServiceTest {
             stock = 50,
             hidden = false
         )
-        given(categoryRepository.findById(menuDtoMock.categoryId)).willReturn(
+        given(categoryRepository.findById(menuDtoMock.categoryId!!)).willReturn(
             Optional.of(
                 categories.first { category -> category.id == menuDtoMock.categoryId }
             )
@@ -192,7 +192,7 @@ internal class MenuServiceTest {
         val menuDto = menuService.addMenu(menuDtoMock)
 
         //then
-        then(categoryRepository).should().findById(menuDtoMock.categoryId)
+        then(categoryRepository).should().findById(menuDtoMock.categoryId!!)
         then(menuRepository).should().save(any())
         assertThat(menuDto.id).isEqualTo(id)
     }
@@ -209,7 +209,7 @@ internal class MenuServiceTest {
             stock = 500,
             hidden = false
         )
-        given(categoryRepository.findById(menuDtoMock.categoryId)).willReturn(
+        given(categoryRepository.findById(menuDtoMock.categoryId!!)).willReturn(
             Optional.of(
                 categories.first { category -> category.id == menuDtoMock.categoryId }
             )
@@ -221,7 +221,7 @@ internal class MenuServiceTest {
         val menuDto = menuService.updateMenu(id, menuDtoMock)
 
         //then
-        then(categoryRepository).should().findById(menuDtoMock.categoryId)
+        then(categoryRepository).should().findById(menuDtoMock.categoryId!!)
         then(menuRepository).should().save(any())
         assertThat(menuDto.price).isEqualTo(menuDtoMock.price)
         assertThat(menuDto.imageUrl).isEqualTo(menuDtoMock.imageUrl)
@@ -242,7 +242,7 @@ internal class MenuServiceTest {
             stock = 500,
             hidden = false
         )
-        given(categoryRepository.findById(menuDtoMock.categoryId)).willReturn(
+        given(categoryRepository.findById(menuDtoMock.categoryId!!)).willReturn(
             Optional.of(
                 categories.first { category -> category.id == menuDtoMock.categoryId }
             )

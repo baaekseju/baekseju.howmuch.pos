@@ -21,7 +21,7 @@ class MenuService(val menuRepository: MenuRepository, val categoryRepository: Ca
     }
 
     fun addMenu(menuDto: MenuDto): MenuDto {
-        val category = categoryRepository.findById(menuDto.categoryId).orElse(null) ?: throw EntityNotFoundException()
+        val category = categoryRepository.findById(menuDto.categoryId!!).orElse(null) ?: throw EntityNotFoundException()
         val menuEntity = menuMapper.toEntity(menuDto)
         menuEntity.category = category
         val menu = menuRepository.save(menuEntity)
@@ -29,7 +29,7 @@ class MenuService(val menuRepository: MenuRepository, val categoryRepository: Ca
     }
 
     fun updateMenu(menuId: Int, menuDto: MenuDto): MenuDto {
-        val category = categoryRepository.findById(menuDto.categoryId).orElse(null) ?: throw EntityNotFoundException()
+        val category = categoryRepository.findById(menuDto.categoryId!!).orElse(null) ?: throw EntityNotFoundException()
         val menu = menuRepository.findById(menuId).orElse(null) ?: throw EntityNotFoundException()
         menu.updateMenu(menuDto, category)
         menuRepository.save(menu)
