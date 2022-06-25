@@ -186,7 +186,7 @@ internal class CategoryControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/categories"))
-            .andExpect(jsonPath("$.messages", hasItem("한 글자 이상 입력해야 합니다.")))
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 
     @Test
@@ -232,7 +232,7 @@ internal class CategoryControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/categories/$id"))
-            .andExpect(jsonPath("$.messages", hasItem("한 글자 이상 입력해야 합니다.")))
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 
     @Test

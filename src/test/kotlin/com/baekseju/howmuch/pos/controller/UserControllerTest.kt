@@ -5,7 +5,7 @@ import com.baekseju.howmuch.pos.dto.UserDto
 import com.baekseju.howmuch.pos.exception.UserExistException
 import com.baekseju.howmuch.pos.service.UserService
 import org.assertj.core.api.Assertions
-import org.hamcrest.Matchers.hasItem
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.eq
@@ -102,21 +102,6 @@ internal class UserControllerTest {
     }
 
     @Test
-    fun getUserByEmptyPhoneNumber() {
-        val phoneNumber = ""
-        mockMvc.perform(get("/api/users?phone-number=${phoneNumber}"))
-            .andExpect { result ->
-                Assertions.assertThat(result.resolvedException)
-                    .isInstanceOf(ConstraintViolationException::class.java)
-            }
-            .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
-            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
-            .andExpect(jsonPath("$.path").value("/api/users"))
-            .andExpect(jsonPath("$.messages", hasItem("한 글자 이상 입력해야 합니다.")))
-    }
-
-    @Test
     fun getUserByPatternMismatchPhoneNumber() {
         val phoneNumber = "010-111-2222"
         mockMvc.perform(get("/api/users?phone-number=${phoneNumber}"))
@@ -180,7 +165,7 @@ internal class UserControllerTest {
     }
 
     @Test
-    fun addUserInvalidData() {
+    fun addUserWithInvalidData() {
         val phoneNumber = "010-111-2222"
 
         mockMvc.perform(
@@ -196,7 +181,7 @@ internal class UserControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/users"))
-            .andExpect(jsonPath("$.messages", hasItem("010-xxxx-xxxx 형식으로 입력해야 합니다.")))
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 
     @Test
@@ -280,7 +265,7 @@ internal class UserControllerTest {
     }
 
     @Test
-    fun patchPointByUserInvalidData() {
+    fun patchPointByUserWithInvalidData() {
         val userId = 1
         val point = 0
 
@@ -297,6 +282,6 @@ internal class UserControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/users/$userId/point"))
-            .andExpect(jsonPath("$.messages", hasItem("1 이상 입력해야 합니다.")))
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 }

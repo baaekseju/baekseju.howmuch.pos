@@ -3,8 +3,7 @@ package com.baekseju.howmuch.pos.controller
 import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.service.MenuService
 import org.assertj.core.api.Assertions.assertThat
-import org.hamcrest.Matchers.hasItem
-import org.hamcrest.Matchers.hasSize
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.eq
@@ -213,7 +212,7 @@ internal class MenuControllerTest {
     }
 
     @Test
-    fun addMenuValidationNotNull() {
+    fun addMenuWithInvalidData() {
         //when, then
         mockMvc.perform(
             post("/api/menus")
@@ -227,43 +226,7 @@ internal class MenuControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/menus"))
-            .andExpect(jsonPath("$.messages", hasItem("한 글자 이상 입력해야 합니다.")))
-    }
-
-    @Test
-    fun addMenuValidationMin() {
-        //when, then
-        mockMvc.perform(
-            post("/api/menus")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"hamburger\", \"price\": -1, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}")
-        )
-            .andExpect { result -> assertThat(result.resolvedException)
-                .isInstanceOf(MethodArgumentNotValidException::class.java) }
-            .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.timeStamp").exists())
-            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
-            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
-            .andExpect(jsonPath("$.path").value("/api/menus"))
-            .andExpect(jsonPath("$.messages", hasItem("0 이상 입력해야 합니다.")))
-    }
-
-    @Test
-    fun addMenuValidationURL() {
-        //when, then
-        mockMvc.perform(
-            post("/api/menus")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"hamburger\", \"price\": 5000, \"imageUrl\": \"abcd\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}")
-        )
-            .andExpect { result -> assertThat(result.resolvedException)
-                .isInstanceOf(MethodArgumentNotValidException::class.java) }
-            .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.timeStamp").exists())
-            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
-            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
-            .andExpect(jsonPath("$.path").value("/api/menus"))
-            .andExpect(jsonPath("$.messages", hasItem("URL 형식이어야 합니다.")))
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 
     @Test
@@ -327,7 +290,7 @@ internal class MenuControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/menus/$id"))
-            .andExpect(jsonPath("$.messages", hasItem("한 글자 이상 입력해야 합니다.")))
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 
     @Test

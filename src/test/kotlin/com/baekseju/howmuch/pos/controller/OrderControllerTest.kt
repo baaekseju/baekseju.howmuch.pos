@@ -3,7 +3,7 @@ package com.baekseju.howmuch.pos.controller
 import com.baekseju.howmuch.pos.dto.OrderDto
 import com.baekseju.howmuch.pos.service.OrderService
 import org.assertj.core.api.Assertions
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
@@ -78,7 +78,7 @@ internal class OrderControllerTest {
     }
 
     @Test
-    fun addOrderValidationNotNull() {
+    fun addOrderWithInvalidData() {
         mockMvc.perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -91,23 +91,6 @@ internal class OrderControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/orders"))
-            .andExpect(jsonPath("$.messages", Matchers.hasItem("한 글자 이상 입력해야 합니다.")))
-    }
-
-    @Test
-    fun addOrderValidationMin() {
-        mockMvc.perform(
-            post("/api/orders")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"menus\": \"{주문내역...}\", \"price\": -1, \"payWith\": \"card\"}")
-        )
-            .andExpect { result -> Assertions.assertThat(result.resolvedException)
-                .isInstanceOf(MethodArgumentNotValidException::class.java) }
-            .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.timeStamp").exists())
-            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
-            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
-            .andExpect(jsonPath("$.path").value("/api/orders"))
-            .andExpect(jsonPath("$.messages", Matchers.hasItem("0 이상 입력해야 합니다.")))
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 }
