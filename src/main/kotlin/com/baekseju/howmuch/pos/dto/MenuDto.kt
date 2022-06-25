@@ -18,7 +18,7 @@ class MenuDto(
     @field:NotNull(message = "한 글자 이상 입력해야 합니다.")
     @field:Min(value = 0L, message = "0 이상 입력해야 합니다.")
     var price: Int?,
-    @JsonView(MenuJsonView.Detail::class)
+    @JsonView(MenuJsonView.Simple::class)
     @field:NotEmpty(message = "한 글자 이상 입력해야 합니다.")
     @field:URL(message = "URL 형식이어야 합니다.")
     var imageUrl: String?,
