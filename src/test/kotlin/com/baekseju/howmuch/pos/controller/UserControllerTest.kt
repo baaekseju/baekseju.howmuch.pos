@@ -4,6 +4,8 @@ import com.baekseju.howmuch.pos.dto.PointDto
 import com.baekseju.howmuch.pos.dto.UserDto
 import com.baekseju.howmuch.pos.exception.UserExistException
 import com.baekseju.howmuch.pos.service.UserService
+import org.assertj.core.api.Assertions
+import org.hamcrest.Matchers.hasItem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.eq
@@ -19,19 +21,15 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.web.context.WebApplicationContext
-import org.springframework.web.filter.CharacterEncodingFilter
+import org.springframework.web.bind.MethodArgumentNotValidException
 import java.time.Instant
 import javax.persistence.EntityNotFoundException
+import javax.validation.ConstraintViolationException
 
 @WebMvcTest(UserController::class)
 internal class UserControllerTest {
-    private lateinit var mockMvc: MockMvc
-
     @Autowired
-    private lateinit var ctx: WebApplicationContext
+    private lateinit var mockMvc: MockMvc
 
     @MockBean
     private lateinit var userService: UserService
@@ -44,10 +42,6 @@ internal class UserControllerTest {
 
     @BeforeEach
     fun setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
-            .addFilter<DefaultMockMvcBuilder?>(CharacterEncodingFilter("UTF-8", true))
-            .build()
-
         setUserDtos()
     }
 
@@ -94,6 +88,10 @@ internal class UserControllerTest {
         given(userService.getUserByPhoneNumber(phoneNumber)).willThrow(EntityNotFoundException(errorMsg))
 
         mockMvc.perform(get("/api/users?phone-number=${phoneNumber}"))
+            .andExpect { result ->
+                Assertions.assertThat(result.resolvedException)
+                    .isInstanceOf(EntityNotFoundException::class.java)
+            }
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
@@ -101,6 +99,36 @@ internal class UserControllerTest {
             .andExpect(jsonPath("$.messages[0]").value(errorMsg))
 
         then(userService).should().getUserByPhoneNumber(any())
+    }
+
+    @Test
+    fun getUserByEmptyPhoneNumber() {
+        val phoneNumber = ""
+        mockMvc.perform(get("/api/users?phone-number=${phoneNumber}"))
+            .andExpect { result ->
+                Assertions.assertThat(result.resolvedException)
+                    .isInstanceOf(ConstraintViolationException::class.java)
+            }
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
+            .andExpect(jsonPath("$.path").value("/api/users"))
+            .andExpect(jsonPath("$.messages", hasItem("한 글자 이상 입력해야 합니다.")))
+    }
+
+    @Test
+    fun getUserByPatternMismatchPhoneNumber() {
+        val phoneNumber = "010-111-2222"
+        mockMvc.perform(get("/api/users?phone-number=${phoneNumber}"))
+            .andExpect { result ->
+                Assertions.assertThat(result.resolvedException)
+                    .isInstanceOf(ConstraintViolationException::class.java)
+            }
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
+            .andExpect(jsonPath("$.path").value("/api/users"))
+            .andExpect(jsonPath("$.messages", hasItem("010-xxxx-xxxx 형식으로 입력해야 합니다.")))
     }
 
     @Test
@@ -138,13 +166,37 @@ internal class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"phoneNumber\": \"${phoneNumber}\"}")
         )
+            .andExpect { result ->
+                Assertions.assertThat(result.resolvedException)
+                    .isInstanceOf(UserExistException::class.java)
+            }
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/users"))
-            .andExpect(jsonPath("$.messages[0]").value("입력하신 ${phoneNumber}는 이미 가입된 번호입니다."))
+            .andExpect(jsonPath("$.messages", hasItem("입력하신 ${phoneNumber}는 이미 가입된 번호입니다.")))
 
         then(userService).should().addUser(any())
+    }
+
+    @Test
+    fun addUserInvalidData() {
+        val phoneNumber = "010-111-2222"
+
+        mockMvc.perform(
+            post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"phoneNumber\": \"${phoneNumber}\"}")
+        )
+            .andExpect { result ->
+                Assertions.assertThat(result.resolvedException)
+                    .isInstanceOf(MethodArgumentNotValidException::class.java)
+            }
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
+            .andExpect(jsonPath("$.path").value("/api/users"))
+            .andExpect(jsonPath("$.messages", hasItem("010-xxxx-xxxx 형식으로 입력해야 합니다.")))
     }
 
     @Test
@@ -174,6 +226,10 @@ internal class UserControllerTest {
         given(userService.getPointByUser(userId)).willThrow(EntityNotFoundException("존재하지 않은 사용자입니다."))
 
         mockMvc.perform(get("/api/users/${userId}/point"))
+            .andExpect { result ->
+                Assertions.assertThat(result.resolvedException)
+                    .isInstanceOf(EntityNotFoundException::class.java)
+            }
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
 
@@ -213,9 +269,34 @@ internal class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"point\": ${point}}")
         )
+            .andExpect { result ->
+                Assertions.assertThat(result.resolvedException)
+                    .isInstanceOf(EntityNotFoundException::class.java)
+            }
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
 
         then(userService).should().addPoint(eq(userId), eq(point))
+    }
+
+    @Test
+    fun patchPointByUserInvalidData() {
+        val userId = 1
+        val point = 0
+
+        mockMvc.perform(
+            patch("/api/users/${userId}/point")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"point\": ${point}}")
+        )
+            .andExpect { result ->
+                Assertions.assertThat(result.resolvedException)
+                    .isInstanceOf(MethodArgumentNotValidException::class.java)
+            }
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
+            .andExpect(jsonPath("$.path").value("/api/users/$userId/point"))
+            .andExpect(jsonPath("$.messages", hasItem("1 이상 입력해야 합니다.")))
     }
 }
