@@ -1,5 +1,6 @@
-package com.baekseju.howmuch.pos.dto
+package com.baekseju.howmuch.pos.entity
 
+import com.baekseju.howmuch.pos.dto.CategoryDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -9,8 +10,7 @@ import javax.validation.Validator
 import javax.validation.ValidatorFactory
 import javax.validation.constraints.NotBlank
 
-
-internal class CategoryDtoTest {
+internal class CategoryTest {
     private lateinit var validatorFactory: ValidatorFactory
     private lateinit var validator: Validator
 
@@ -26,36 +26,38 @@ internal class CategoryDtoTest {
     }
 
     @Test
-    fun categoryDto() {
-        val categoryDto = CategoryDto(name = "햄버거")
+    fun category() {
+        val category = Category(
+            name = "햄버거"
+        )
 
-        val violations = validator.validate(categoryDto)
+        val violations = validator.validate(category)
 
         assertThat(violations).isEmpty()
     }
 
     @Test
-    fun categoryDtoCheckNull() {
-        val categoryDto = CategoryDto(name = null)
-        val violations = validator.validate(categoryDto)
+    fun categoryCheckNull() {
+        val category = Category(name = null)
+        val violations = validator.validate(category)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(1)
     }
 
     @Test
-    fun categoryDtoCheckEmpty() {
-        val categoryDto = CategoryDto(name = "")
-        val violations = validator.validate(categoryDto)
+    fun categoryCheckEmpty() {
+        val category = CategoryDto(name = "")
+        val violations = validator.validate(category)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(1)
     }
 
     @Test
-    fun categoryDtoCheckBlank() {
-        val categoryDto = CategoryDto(name = " ")
-        val violations = validator.validate(categoryDto)
+    fun categoryCheckBlank() {
+        val category = CategoryDto(name = " ")
+        val violations = validator.validate(category)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(1)

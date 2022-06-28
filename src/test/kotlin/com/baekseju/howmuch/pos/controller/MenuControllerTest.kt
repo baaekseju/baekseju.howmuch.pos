@@ -96,7 +96,7 @@ internal class MenuControllerTest {
             .andExpect(jsonPath("$[0].id").exists())
             .andExpect(jsonPath("$[0].name").exists())
             .andExpect(jsonPath("$[0].price").exists())
-            .andExpect(jsonPath("$[0].imageUrl").doesNotExist())
+            .andExpect(jsonPath("$[0].imageUrl").exists())
             .andExpect(jsonPath("$[0].additionalPrice").doesNotExist())
             .andExpect(jsonPath("$[0].stock").exists())
             .andExpect(jsonPath("$[0].categoryId").doesNotExist())

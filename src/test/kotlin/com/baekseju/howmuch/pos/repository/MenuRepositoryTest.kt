@@ -3,14 +3,18 @@ package com.baekseju.howmuch.pos.repository
 import com.baekseju.howmuch.pos.entity.Category
 import com.baekseju.howmuch.pos.entity.Menu
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.time.Instant
+import javax.validation.ConstraintViolationException
 
 @SpringBootTest
 internal class MenuRepositoryTest {
     @Autowired
     private lateinit var menuRepository: MenuRepository
+
     @Autowired
     private lateinit var categoryRepository: CategoryRepository
 
@@ -28,6 +32,7 @@ internal class MenuRepositoryTest {
                 price = 5000,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 500,
+                category = categoryRepository.save(Category(1, "햄버거", Instant.now(), Instant.now())),
                 stock = 50,
                 hidden = false
             )
@@ -38,6 +43,7 @@ internal class MenuRepositoryTest {
                 price = 1500,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 0,
+                category = categoryRepository.save(Category(2, "음료", Instant.now(), Instant.now())),
                 stock = 999,
                 hidden = false,
                 deletedAt = null
@@ -80,6 +86,24 @@ internal class MenuRepositoryTest {
     }
 
     @Test
+    fun saveInvalidData() {
+        val category = categoryRepository.save(Category(
+            name = "burger"
+        ))
+        val menu = Menu(
+            name = "",
+            price = -1,
+            imageUrl = "image",
+            additionalPrice = -1,
+            category = category,
+            stock = -1,
+            hidden = null
+        )
+
+        assertThatThrownBy { menuRepository.save(menu) }.isInstanceOf(ConstraintViolationException::class.java)
+    }
+
+    @Test
     fun update() {
         //given
         val category = categoryRepository.save(Category(
@@ -103,6 +127,28 @@ internal class MenuRepositoryTest {
         //then
         assertThat(updatedMenu.name).isEqualTo("cola")
         assertThat(updatedMenu.updatedAt).isNotEqualTo(savedMenu.updatedAt)
+    }
+
+    @Test
+    fun updateInvalidData() {
+        //given
+        val category = categoryRepository.save(Category(
+            name = "burger"
+        ))
+        val menu = Menu(
+            name = "hamburger",
+            price = 5000,
+            imageUrl = "https://via.placeholder.com/200x200",
+            additionalPrice = 500,
+            category = category,
+            stock = 50,
+            hidden = false
+        )
+        val savedMenu = menuRepository.save(menu)
+
+        savedMenu.name = ""
+
+        assertThatThrownBy { menuRepository.save(savedMenu) }.hasRootCauseInstanceOf(ConstraintViolationException::class.java)
     }
 
     @Test

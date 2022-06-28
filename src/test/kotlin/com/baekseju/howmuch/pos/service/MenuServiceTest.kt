@@ -51,6 +51,7 @@ internal class MenuServiceTest {
                 price = 5000,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 500,
+                category = Category(1, "햄버거", Instant.now(), Instant.now()),
                 stock = 50,
                 hidden = false,
                 createdAt = Instant.now(),
@@ -64,6 +65,7 @@ internal class MenuServiceTest {
                 price = 1500,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 0,
+                category = Category(2, "음료", Instant.now(), Instant.now()),
                 stock = 999,
                 hidden = false,
                 createdAt = Instant.now(),
@@ -78,6 +80,7 @@ internal class MenuServiceTest {
                 price = 6000,
                 imageUrl = "https://via.placeholder.com/200x200",
                 additionalPrice = 2000,
+                category = Category(3, "사이드", Instant.now(), Instant.now()),
                 stock = 10,
                 hidden = true,
                 createdAt = Instant.now(),
@@ -99,7 +102,7 @@ internal class MenuServiceTest {
     fun getMenusHiddenIsFalse() {
         //given
         given(menuRepository.findAllByHiddenAndDeletedAtIsNull(false)).willReturn(
-            menus.filter { menu -> !menu.hidden && menu.deletedAt == null }
+            menus.filter { menu -> menu.hidden == false && menu.deletedAt == null }
         )
 
         //when
@@ -115,7 +118,7 @@ internal class MenuServiceTest {
     fun getMenusHiddenIsTrue() {
         //given
         given(menuRepository.findAllByHiddenAndDeletedAtIsNull(true)).willReturn(
-            menus.filter { menu -> menu.hidden && menu.deletedAt == null }
+            menus.filter { menu -> menu.hidden == true && menu.deletedAt == null }
         )
 
         //when

@@ -5,6 +5,9 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 import javax.persistence.*
+import javax.validation.constraints.Min
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Positive
 
 @Entity
 @EntityListeners(value = [AuditingEntityListener::class])
@@ -12,9 +15,12 @@ class Point(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int? = null,
-    var point: Int,
+    @field:NotNull
+    @field:Positive
+    var point: Int?,
+    @field:NotNull
     @OneToOne
-    var user: User,
+    var user: User?,
     @CreatedDate
     var createdAt: Instant? = null,
     @LastModifiedDate
@@ -22,6 +28,6 @@ class Point(
     deletedAt: Instant? = null
 ) : SoftDeleteEntity(deletedAt) {
     fun addPoint(point: Int) {
-        this.point += point
+        this.point = this.point?.plus(point)
     }
 }

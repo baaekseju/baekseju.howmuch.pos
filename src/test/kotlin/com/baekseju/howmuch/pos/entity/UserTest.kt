@@ -1,4 +1,4 @@
-package com.baekseju.howmuch.pos.dto
+package com.baekseju.howmuch.pos.entity
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -10,7 +10,7 @@ import javax.validation.ValidatorFactory
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
 
-internal class UserDtoTest {
+internal class UserTest {
     private lateinit var validatorFactory: ValidatorFactory
     private lateinit var validator: Validator
 
@@ -26,47 +26,47 @@ internal class UserDtoTest {
     }
 
     @Test
-    fun userDto() {
-        val userDto = UserDto(
-            phoneNumber = "010-1111-2222"
+    fun user() {
+        val user = User(
+            phoneNumber = "010-4631-1684"
         )
 
-        val violations = validator.validate(userDto)
+        val violations = validator.validate(user)
 
         assertThat(violations).isEmpty()
     }
 
     @Test
-    fun userDtoCheckNull() {
-        val userDto = UserDto(
+    fun userCheckNull() {
+        val user = User(
             phoneNumber = null
         )
 
-        val violations = validator.validate(userDto)
+        val violations = validator.validate(user)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is NotNull }.size).isEqualTo(1)
     }
 
     @Test
-    fun userDtoCheckEmpty() {
-        val userDto = UserDto(
+    fun userCheckEmpty() {
+        val user = User(
             phoneNumber = ""
         )
 
-        val violations = validator.validate(userDto)
+        val violations = validator.validate(user)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is Pattern }.size).isEqualTo(1)
     }
 
     @Test
-    fun userDtoCheckPattern() {
-        val userDto = UserDto(
+    fun userCheckPattern() {
+        val user = User(
             phoneNumber = "010-12312-13123"
         )
 
-        val violations = validator.validate(userDto)
+        val violations = validator.validate(user)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is Pattern }.size).isEqualTo(1)

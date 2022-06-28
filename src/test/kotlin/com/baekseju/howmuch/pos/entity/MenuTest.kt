@@ -1,10 +1,11 @@
-package com.baekseju.howmuch.pos.dto
+package com.baekseju.howmuch.pos.entity
 
 import org.assertj.core.api.Assertions.assertThat
 import org.hibernate.validator.constraints.URL
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Instant
 import javax.validation.Validation
 import javax.validation.Validator
 import javax.validation.ValidatorFactory
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
-internal class MenuDtoTest {
+internal class MenuTest {
     private lateinit var validatorFactory: ValidatorFactory
     private lateinit var validator: Validator
 
@@ -29,35 +30,35 @@ internal class MenuDtoTest {
     }
 
     @Test
-    fun menuDto() {
-        val menuDto = MenuDto(
+    fun menu() {
+        val menu = Menu(
             name = "싸이버거",
             imageUrl = "https://www.test.com",
             price = 5900,
             additionalPrice = 500,
-            categoryId = 1,
+            category = Category(1, "햄버거", Instant.now(), Instant.now()),
             stock = 999,
             hidden = false
         )
 
-        val violations = validator.validate(menuDto)
+        val violation = validator.validate(menu)
 
-        assertThat(violations).isEmpty()
+        assertThat(violation).isEmpty()
     }
 
     @Test
-    fun menuDtoCheckNull() {
-        val menuDto = MenuDto(
+    fun menuCheckNull() {
+        val menu = Menu(
             name = null,
             imageUrl = null,
             price = null,
             additionalPrice = null,
-            categoryId = null,
+            category = null,
             stock = null,
             hidden = null
         )
 
-        val violations = validator.validate(menuDto)
+        val violations = validator.validate(menu)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is NotEmpty }.size).isEqualTo(1)
@@ -66,18 +67,18 @@ internal class MenuDtoTest {
     }
 
     @Test
-    fun menuDtoCheckEmpty() {
-        val menuDto = MenuDto(
+    fun menuCheckEmpty() {
+        val menu = Menu(
             name = "",
             imageUrl = "",
             price = 5900,
             additionalPrice = 500,
-            categoryId = 1,
+            category = Category(1, "햄버거", Instant.now(), Instant.now()),
             stock = 999,
             hidden = false
         )
 
-        val violations = validator.validate(menuDto)
+        val violations = validator.validate(menu)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is NotEmpty }.size).isEqualTo(1)
@@ -85,18 +86,18 @@ internal class MenuDtoTest {
     }
 
     @Test
-    fun menuDtoCheckBlank() {
-        val menuDto = MenuDto(
+    fun menuCheckBlank() {
+        val menu = Menu(
             name = " ",
             imageUrl = " ",
             price = 5900,
             additionalPrice = 500,
-            categoryId = 1,
+            category = Category(1, "햄버거", Instant.now(), Instant.now()),
             stock = 999,
             hidden = false
         )
 
-        val violations = validator.validate(menuDto)
+        val violations = validator.validate(menu)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is URL }.size).isEqualTo(1)
@@ -104,36 +105,36 @@ internal class MenuDtoTest {
     }
 
     @Test
-    fun menuDtoCheckURL() {
-        val menuDto = MenuDto(
+    fun menuCheckURL() {
+        val menu = Menu(
             name = "싸이버거",
             imageUrl = "image",
             price = 5900,
             additionalPrice = 500,
-            categoryId = 1,
+            category = Category(1, "햄버거", Instant.now(), Instant.now()),
             stock = 999,
             hidden = false
         )
 
-        val violations = validator.validate(menuDto)
+        val violations = validator.validate(menu)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is URL }.size).isEqualTo(1)
     }
 
     @Test
-    fun menuDtoCheckMin() {
-        val menuDto = MenuDto(
+    fun menuCheckMin() {
+        val menu = Menu(
             name = "싸이버거",
             imageUrl = "https://test.com",
             price = -1,
             additionalPrice = -1,
-            categoryId = 1,
+            category = Category(1, "햄버거", Instant.now(), Instant.now()),
             stock = -1,
             hidden = false
         )
 
-        val violations = validator.validate(menuDto)
+        val violations = validator.validate(menu)
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter {it.constraintDescriptor.annotation is Min }.size).isEqualTo(3)
