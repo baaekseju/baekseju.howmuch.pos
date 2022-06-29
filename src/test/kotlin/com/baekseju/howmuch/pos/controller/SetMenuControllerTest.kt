@@ -3,6 +3,7 @@ package com.baekseju.howmuch.pos.controller
 import com.baekseju.howmuch.pos.dto.SetMenuDto
 import com.baekseju.howmuch.pos.service.SetMenuService
 import org.hamcrest.Matchers
+import org.hamcrest.Matchers.hasItem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.eq
@@ -125,7 +126,7 @@ internal class SetMenuControllerTest {
             .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
             .andExpect(jsonPath("$.path").value(url))
-            .andExpect(jsonPath("$.message").value(errorMsg))
+            .andExpect(jsonPath("$.messages[0]").value(errorMsg))
 
         then(setMenuService).should().getSetMenu(id)
     }
@@ -206,7 +207,7 @@ internal class SetMenuControllerTest {
                 .content("{\"name\": \"burger set\", \"price\": 11900, \"imageUrl\": \"https://via.placeholder.com/300x300\", \"hidden\": false}")
         )
             .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message").value(errorMsg))
+            .andExpect(jsonPath("$.messages[0]").value(errorMsg))
 
         then(setMenuService).should().updateSetMenu(eq(id), any())
     }
@@ -240,7 +241,7 @@ internal class SetMenuControllerTest {
 
         mockMvc.perform(delete(url))
             .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message").value(errorMsg))
+            .andExpect(jsonPath("$.messages", hasItem(errorMsg)))
 
         then(setMenuService).should().deleteSetMenu(id, false)
     }

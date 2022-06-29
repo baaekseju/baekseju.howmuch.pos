@@ -25,9 +25,9 @@ class UserService(
     }
 
     fun addUser(userDto: UserDto): UserDto {
-        val existUser = userRepository.findByPhoneNumber(userDto.phoneNumber)
+        val existUser = userRepository.findByPhoneNumber(userDto.phoneNumber!!)
         if (existUser != null) {
-            throw UserExistException(userDto.phoneNumber)
+            throw UserExistException(userDto.phoneNumber!!)
         }
         val user = userRepository.save(userMapper.toEntity(userDto))
         pointRepository.save(

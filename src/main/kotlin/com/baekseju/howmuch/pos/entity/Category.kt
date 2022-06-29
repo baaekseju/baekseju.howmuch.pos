@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 import javax.persistence.*
+import javax.validation.constraints.NotBlank
 
 @Entity
 @EntityListeners(value = [AuditingEntityListener::class])
@@ -13,7 +14,8 @@ class Category(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int? = null,
-    var name: String,
+    @field:NotBlank
+    var name: String?,
     @CreatedDate
     var createdAt: Instant? = null,
     @LastModifiedDate

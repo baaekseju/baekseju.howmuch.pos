@@ -2,6 +2,8 @@ package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.OrderDto
 import com.baekseju.howmuch.pos.service.OrderService
+import org.assertj.core.api.Assertions
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
@@ -19,6 +21,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.filter.CharacterEncodingFilter
 import java.time.Instant
@@ -72,5 +75,22 @@ internal class OrderControllerTest {
             .andDo(print())
 
         then(orderService).should().addOrder(any())
+    }
+
+    @Test
+    fun addOrderWithInvalidData() {
+        mockMvc.perform(
+            post("/api/orders")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"menus\": \"{주문내역...}\", \"payWith\": \"card\"}")
+        )
+            .andExpect { result -> Assertions.assertThat(result.resolvedException)
+                .isInstanceOf(MethodArgumentNotValidException::class.java) }
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.timeStamp").exists())
+            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
+            .andExpect(jsonPath("$.path").value("/api/orders"))
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 }

@@ -38,12 +38,13 @@ dependencies {
 		exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
 	}
 	implementation("org.springframework.boot:spring-boot-starter-undertow")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation ("org.mapstruct:mapstruct:1.4.2.Final")
+	implementation ("org.mapstruct:mapstruct:1.5.1.Final")
 	implementation("mysql:mysql-connector-java")
-	kapt ("org.mapstruct:mapstruct-processor:1.4.2.Final")
+	kapt ("org.mapstruct:mapstruct-processor:1.5.1.Final")
 
 	runtimeOnly("com.h2database:h2")
 

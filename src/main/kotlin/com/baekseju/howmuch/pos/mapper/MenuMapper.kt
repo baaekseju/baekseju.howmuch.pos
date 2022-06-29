@@ -4,11 +4,13 @@ import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.entity.Menu
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
+import org.mapstruct.Mappings
 
 @Mapper(componentModel = "spring")
 interface MenuMapper {
     @Mapping(target = "category", ignore = true)
     fun toEntity(menuDto: MenuDto): Menu
+
     @Mapping(source = "category.id", target = "categoryId")
     fun toDto(menu: Menu): MenuDto
     fun toDtos(menus: List<Menu>): List<MenuDto>

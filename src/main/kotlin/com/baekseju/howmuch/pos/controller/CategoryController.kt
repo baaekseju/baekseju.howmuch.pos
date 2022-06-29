@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/categories")
@@ -25,12 +26,12 @@ class CategoryController(
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun addCategory(@RequestBody category: CategoryDto): CategoryDto {
+    fun addCategory(@Valid @RequestBody category: CategoryDto): CategoryDto {
         return categoryService.addCategory(category)
     }
 
     @PutMapping("/{categoryId}")
-    fun putCategory(@PathVariable categoryId: Int, @RequestBody category: CategoryDto): CategoryDto {
+    fun putCategory(@PathVariable categoryId: Int, @Valid @RequestBody category: CategoryDto): CategoryDto {
         return categoryService.updateCategory(categoryId, category)
     }
 

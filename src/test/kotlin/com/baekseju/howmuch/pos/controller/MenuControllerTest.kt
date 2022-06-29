@@ -3,7 +3,7 @@ package com.baekseju.howmuch.pos.controller
 import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.service.MenuService
 import org.assertj.core.api.Assertions.assertThat
-import org.hamcrest.Matchers.hasSize
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.eq
@@ -14,10 +14,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.web.bind.MethodArgumentNotValidException
 import java.time.Instant
 import javax.persistence.EntityNotFoundException
 
@@ -86,19 +86,18 @@ internal class MenuControllerTest {
     }
 
     @Test
-    fun getMenusHiddenIsFalse() {
+    fun getMenus() {
         //given
-        given(menuService.getMenus(false)).willReturn(menuDtos.filter { !it.hidden })
+        given(menuService.getMenus(anyBoolean())).willReturn(menuDtos.filter { !it.hidden!! })
 
         //when, then
         mockMvc.perform(get("/api/menus"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$", hasSize<Array<Any>>(2)))
             .andExpect(jsonPath("$[0].id").exists())
             .andExpect(jsonPath("$[0].name").exists())
             .andExpect(jsonPath("$[0].price").exists())
             .andExpect(jsonPath("$[0].imageUrl").exists())
-            .andExpect(jsonPath("$[0].additionalPrice").exists())
+            .andExpect(jsonPath("$[0].additionalPrice").doesNotExist())
             .andExpect(jsonPath("$[0].stock").exists())
             .andExpect(jsonPath("$[0].categoryId").doesNotExist())
             .andExpect(jsonPath("$[0].hidden").doesNotExist())
@@ -106,13 +105,25 @@ internal class MenuControllerTest {
             .andExpect(jsonPath("$[0].updatedAt").doesNotExist())
             .andExpect(jsonPath("$[0].deletedAt").doesNotExist())
 
+        then(menuService).should().getMenus(anyBoolean())
+    }
+    @Test
+    fun getMenusHiddenIsFalse() {
+        //given
+        given(menuService.getMenus(false)).willReturn(menuDtos.filter { !it.hidden!! })
+
+        //when, then
+        mockMvc.perform(get("/api/menus"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$", hasSize<Array<Any>>(2)))
+
         then(menuService).should().getMenus(false)
     }
 
     @Test
     fun getMenusHiddenIsTrue() {
         //given
-        given(menuService.getMenus(true)).willReturn(menuDtos.filter { it.hidden })
+        given(menuService.getMenus(true)).willReturn(menuDtos.filter { it.hidden!! })
 
         //when, then
         mockMvc.perform(get("/api/menus?hidden=true"))
@@ -155,18 +166,20 @@ internal class MenuControllerTest {
 
         //when, then
         mockMvc.perform(get("/api/menus/$id"))
+            .andExpect { result -> assertThat(result.resolvedException)
+                .isInstanceOf(EntityNotFoundException::class.java) }
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.timeStamp").exists())
             .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/menus/$id"))
-            .andExpect(jsonPath("$.message").value(errorMsg))
+            .andExpect(jsonPath("$.messages[0]").value(errorMsg))
 
         then(menuService).should().getMenu(id)
     }
 
     @Test
-    fun addMenuWithValidData() {
+    fun addMenu() {
         //given
         val id = 1
         given(menuService.addMenu(any())).will {
@@ -200,24 +213,20 @@ internal class MenuControllerTest {
 
     @Test
     fun addMenuWithInvalidData() {
-
-    }
-
-    @Test
-    fun httpMessageConverterFail() {
         //when, then
         mockMvc.perform(
             post("/api/menus")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"price\": 5000, \"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}")
+                .content("{\"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}")
         )
-            .andExpect { result -> assertThat(result.resolvedException).isInstanceOf(HttpMessageNotReadableException::class.java) }
+            .andExpect { result -> assertThat(result.resolvedException)
+                .isInstanceOf(MethodArgumentNotValidException::class.java) }
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.timeStamp").exists())
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/menus"))
-            .andExpect(jsonPath("$.message").exists())
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 
     @Test
@@ -267,7 +276,21 @@ internal class MenuControllerTest {
 
     @Test
     fun putMenuWithInvalidData() {
+        val id = 1
 
+        mockMvc.perform(
+            put("/api/menus/$id")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"imageUrl\": \"https://via.placeholder.com/200x200\", \"additionalPrice\": 500, \"categoryId\": 1, \"stock\": 100, \"hidden\": false}")
+        )
+            .andExpect { result -> assertThat(result.resolvedException)
+                .isInstanceOf(MethodArgumentNotValidException::class.java) }
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.timeStamp").exists())
+            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
+            .andExpect(jsonPath("$.path").value("/api/menus/$id"))
+            .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
     }
 
     @Test
