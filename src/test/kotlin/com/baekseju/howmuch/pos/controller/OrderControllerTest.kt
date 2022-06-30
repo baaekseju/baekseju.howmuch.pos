@@ -56,7 +56,7 @@ internal class OrderControllerTest {
             OrderDto(
                 id = orderId,
                 menus = orderDto.menus,
-                price = orderDto.price,
+                totalPrice = orderDto.totalPrice,
                 payWith = orderDto.payWith,
                 createdAt = Instant.now(),
                 updatedAt = Instant.now()
@@ -66,7 +66,7 @@ internal class OrderControllerTest {
         mockMvc.perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"menus\": \"{주문내역...}\", \"price\": 10000, \"payWith\": \"card\"}")
+                .content("{\"menus\": [{\"id\":1, \"quantity\": 1}], \"totalPrice\": 10000, \"payWith\": \"card\"}")
         )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
@@ -82,10 +82,12 @@ internal class OrderControllerTest {
         mockMvc.perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"menus\": \"{주문내역...}\", \"payWith\": \"card\"}")
+                .content("{\"menus\": [{\"id\":1, \"quantity\": 1}], \"payWith\": \"card\"}")
         )
-            .andExpect { result -> Assertions.assertThat(result.resolvedException)
-                .isInstanceOf(MethodArgumentNotValidException::class.java) }
+            .andExpect { result ->
+                Assertions.assertThat(result.resolvedException)
+                    .isInstanceOf(MethodArgumentNotValidException::class.java)
+            }
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.timeStamp").exists())
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))

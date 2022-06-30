@@ -29,8 +29,8 @@ internal class OrderDtoTest {
     @Test
     fun orderDto() {
         val orderDto = OrderDto(
-            menus = "[{}]",
-            price = 12900,
+            menus = listOf(OrderDto.Menu(id=1, quantity = 1)),
+            totalPrice = 12900,
             payWith = "credit-card"
         )
 
@@ -43,7 +43,7 @@ internal class OrderDtoTest {
     fun orderDtoCheckNull() {
         val orderDto = OrderDto(
             menus = null,
-            price = null,
+            totalPrice = null,
             payWith = null
         )
 
@@ -51,15 +51,15 @@ internal class OrderDtoTest {
 
 
         assertThat(violations).isNotEmpty
-        assertThat(violations.filter { it.constraintDescriptor.annotation is NotNull }.size).isEqualTo(1)
-        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(2)
+        assertThat(violations.filter { it.constraintDescriptor.annotation is NotNull }.size).isEqualTo(2)
+        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(1)
     }
 
     @Test
     fun orderDtoCheckEmpty() {
         val orderDto = OrderDto(
-            menus = "",
-            price = 5900,
+            menus = listOf(OrderDto.Menu(id=1, quantity = 1)),
+            totalPrice = 5900,
             payWith = ""
         )
 
@@ -67,14 +67,14 @@ internal class OrderDtoTest {
 
 
         assertThat(violations).isNotEmpty
-        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(2)
+        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(1)
     }
 
     @Test
     fun orderDtoCheckBlank() {
         val orderDto = OrderDto(
-            menus = " ",
-            price = 5900,
+            menus = listOf(OrderDto.Menu(id=1, quantity = 1)),
+            totalPrice = 5900,
             payWith = " "
         )
 
@@ -82,14 +82,14 @@ internal class OrderDtoTest {
 
 
         assertThat(violations).isNotEmpty
-        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(2)
+        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(1)
     }
 
     @Test
     fun orderDtoCheckMin() {
         val orderDto = OrderDto(
-            menus = "[{}]",
-            price = -1,
+            menus = listOf(OrderDto.Menu(id=1, quantity = 1)),
+            totalPrice = -1,
             payWith = "credit-card"
         )
 

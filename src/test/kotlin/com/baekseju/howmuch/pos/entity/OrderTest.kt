@@ -29,8 +29,7 @@ internal class OrderTest {
     @Test
     fun order() {
         val order = Order(
-            menus = "[{}]",
-            price = 10000,
+            totalPrice = 10000,
             payWith = "credit-card"
         )
 
@@ -42,8 +41,7 @@ internal class OrderTest {
     @Test
     fun orderCheckNull() {
         val order = Order(
-            menus = null,
-            price = null,
+            totalPrice = null,
             payWith = null
         )
 
@@ -52,14 +50,13 @@ internal class OrderTest {
 
         assertThat(violations).isNotEmpty
         assertThat(violations.filter { it.constraintDescriptor.annotation is NotNull }.size).isEqualTo(1)
-        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(2)
+        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(1)
     }
 
     @Test
     fun orderCheckEmpty() {
         val order = Order(
-            menus = "",
-            price = 5900,
+            totalPrice = 5900,
             payWith = ""
         )
 
@@ -67,14 +64,13 @@ internal class OrderTest {
 
 
         assertThat(violations).isNotEmpty
-        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(2)
+        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(1)
     }
 
     @Test
     fun orderCheckBlank() {
         val order = Order(
-            menus = " ",
-            price = 5900,
+            totalPrice = 5900,
             payWith = " "
         )
 
@@ -82,14 +78,13 @@ internal class OrderTest {
 
 
         assertThat(violations).isNotEmpty
-        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(2)
+        assertThat(violations.filter { it.constraintDescriptor.annotation is NotBlank }.size).isEqualTo(1)
     }
 
     @Test
     fun orderDtoCheckMin() {
         val order = Order(
-            menus = "[{}]",
-            price = -1,
+            totalPrice = -1,
             payWith = "credit-card"
         )
 

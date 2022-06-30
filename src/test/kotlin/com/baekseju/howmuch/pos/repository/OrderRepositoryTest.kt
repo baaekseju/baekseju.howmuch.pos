@@ -20,8 +20,7 @@ internal class OrderRepositoryTest {
     @Test
     fun saveInvalidData() {
         assertThatThrownBy { orderRepository.save(Order(
-            menus="[{}]",
-            price = 500,
+            totalPrice = 500,
             payWith = ""
         )) }.isInstanceOf(ConstraintViolationException::class.java)
     }

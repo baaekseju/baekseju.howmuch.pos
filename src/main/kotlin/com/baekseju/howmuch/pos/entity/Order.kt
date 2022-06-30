@@ -16,11 +16,9 @@ class Order(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int? = null,
-    @field:NotBlank
-    var menus: String?,
     @field:NotNull
     @field:Min(value = 0L)
-    var price: Int?,
+    var totalPrice: Int?,
     @field:NotBlank
     var payWith: String?,
     @CreatedDate
