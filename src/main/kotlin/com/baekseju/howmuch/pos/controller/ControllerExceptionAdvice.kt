@@ -1,6 +1,7 @@
 package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.ErrorDto
+import com.baekseju.howmuch.pos.exception.StockNotEnoughException
 import com.baekseju.howmuch.pos.exception.UserExistException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -45,6 +46,20 @@ class ControllerExceptionAdvice {
     @ExceptionHandler(UserExistException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun userExistHandler(exception: UserExistException, request: HttpServletRequest): ErrorDto{
+        val error = ErrorDto(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
+            path = request.requestURI
+        )
+
+        error.messages.add(exception.message)
+
+        return error
+    }
+
+    @ExceptionHandler(StockNotEnoughException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun stockNotEnoughHandler(exception: StockNotEnoughException, request: HttpServletRequest): ErrorDto{
         val error = ErrorDto(
             status = HttpStatus.BAD_REQUEST.value(),
             error = HttpStatus.BAD_REQUEST.reasonPhrase,

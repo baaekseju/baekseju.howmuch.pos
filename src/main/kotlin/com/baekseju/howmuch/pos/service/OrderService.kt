@@ -3,6 +3,7 @@ package com.baekseju.howmuch.pos.service
 import com.baekseju.howmuch.pos.dto.OrderDto
 import com.baekseju.howmuch.pos.entity.MenuOrderMap
 import com.baekseju.howmuch.pos.entity.Order
+import com.baekseju.howmuch.pos.exception.StockNotEnoughException
 import com.baekseju.howmuch.pos.mapper.OrderMapper
 import com.baekseju.howmuch.pos.repository.MenuOrderMapRepository
 import com.baekseju.howmuch.pos.repository.MenuRepository
@@ -29,8 +30,11 @@ class OrderService(
         val orderDtoMenuList: MutableList<OrderDto.Menu> = mutableListOf()
 
         order.menus?.map { menu ->
+            val orderedMenu = menuRepository.findById(menu.id!!).orElse(null) ?: throw EntityNotFoundException()
+            if (orderedMenu.stock!! < menu.quantity!!) throw StockNotEnoughException()
+            orderedMenu.stock = orderedMenu.stock?.minus(menu.quantity)
             val menuOrderMap = MenuOrderMap(
-                menu = menuRepository.findById(menu.id!!).orElse(null) ?: throw EntityNotFoundException(),
+                menu = orderedMenu,
                 order = savedOrderEntity,
                 quantity = menu.quantity
             )
