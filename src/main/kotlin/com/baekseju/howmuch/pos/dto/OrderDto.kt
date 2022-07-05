@@ -7,14 +7,21 @@ import javax.validation.constraints.NotNull
 
 class OrderDto(
     val id: Int? = null,
-    @field:NotBlank(message = "한 글자 이상 입력해야 합니다.")
-    var menus: String?,
+    @field:NotNull
+    var menuItems: List<MenuItem>?,
     @field:NotNull(message = "한 글자 이상 입력해야 합니다.")
     @field:Min(value = 0L, message = "0 이상 입력해야 합니다.")
-    var price: Int?,
+    var totalPrice: Int?,
     @field:NotBlank(message = "한 글자 이상 입력해야 합니다.")
     var payWith: String?,
     var createdAt: Instant? = null,
     var updatedAt: Instant? = null,
     var deletedAt: Instant? = null
-) : BaseDto
+) : BaseDto {
+    class MenuItem(
+        @field:NotNull
+        val id: Int?,
+        @field:NotNull
+        val quantity: Int?
+    )
+}

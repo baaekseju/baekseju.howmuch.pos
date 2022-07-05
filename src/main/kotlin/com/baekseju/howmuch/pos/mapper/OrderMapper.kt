@@ -6,6 +6,6 @@ import org.mapstruct.Mapper
 
 @Mapper(componentModel = "spring")
 interface OrderMapper {
+//    fun toEntity(orderDto: OrderDto): Order
     fun toEntity(orderDto: OrderDto): Order
-    fun toDto(order: Order): OrderDto
 }

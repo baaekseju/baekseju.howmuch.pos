@@ -1,8 +1,9 @@
 package com.baekseju.howmuch.pos.controller
 
 import com.baekseju.howmuch.pos.dto.OrderDto
+import com.baekseju.howmuch.pos.exception.StockNotEnoughException
 import com.baekseju.howmuch.pos.service.OrderService
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -55,8 +56,8 @@ internal class OrderControllerTest {
             val orderDto: OrderDto = it.getArgument(0)
             OrderDto(
                 id = orderId,
-                menus = orderDto.menus,
-                price = orderDto.price,
+                menuItems = orderDto.menuItems,
+                totalPrice = orderDto.totalPrice,
                 payWith = orderDto.payWith,
                 createdAt = Instant.now(),
                 updatedAt = Instant.now()
@@ -66,7 +67,7 @@ internal class OrderControllerTest {
         mockMvc.perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"menus\": \"{주문내역...}\", \"price\": 10000, \"payWith\": \"card\"}")
+                .content("{\"menuItems\": [{\"id\":1, \"quantity\": 1}], \"totalPrice\": 10000, \"payWith\": \"card\"}")
         )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
@@ -82,15 +83,38 @@ internal class OrderControllerTest {
         mockMvc.perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"menus\": \"{주문내역...}\", \"payWith\": \"card\"}")
+                .content("{\"menuItems\": [{\"id\":1, \"quantity\": 1}], \"payWith\": \"card\"}")
         )
-            .andExpect { result -> Assertions.assertThat(result.resolvedException)
-                .isInstanceOf(MethodArgumentNotValidException::class.java) }
+            .andExpect { result ->
+                assertThat(result.resolvedException)
+                    .isInstanceOf(MethodArgumentNotValidException::class.java)
+            }
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.timeStamp").exists())
             .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
             .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
             .andExpect(jsonPath("$.path").value("/api/orders"))
             .andExpect(jsonPath("$.messages", hasSize<String>(greaterThanOrEqualTo(1))))
+    }
+
+    @Test
+    fun addOrderWithOverQuantity() {
+        given(orderService.addOrder(any())).willThrow(StockNotEnoughException())
+
+        mockMvc.perform(
+            post("/api/orders")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"menuItems\": [{\"id\":1, \"quantity\": 999}], \"totalPrice\": 10000, \"payWith\": \"card\"}")
+        )
+            .andExpect { result ->
+                assertThat(result.resolvedException)
+                    .isInstanceOf(StockNotEnoughException::class.java)
+            }
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.timeStamp").exists())
+            .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.reasonPhrase))
+            .andExpect(jsonPath("$.path").value("/api/orders"))
+            .andExpect(jsonPath("$.messages[0]").value("재고가 충분하지 않습니다."))
     }
 }
