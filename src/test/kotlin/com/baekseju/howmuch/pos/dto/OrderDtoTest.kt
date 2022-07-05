@@ -29,7 +29,7 @@ internal class OrderDtoTest {
     @Test
     fun orderDto() {
         val orderDto = OrderDto(
-            menus = listOf(OrderDto.Menu(id=1, quantity = 1)),
+            menuItems = listOf(OrderDto.MenuItem(id=1, quantity = 1)),
             totalPrice = 12900,
             payWith = "credit-card"
         )
@@ -42,7 +42,7 @@ internal class OrderDtoTest {
     @Test
     fun orderDtoCheckNull() {
         val orderDto = OrderDto(
-            menus = null,
+            menuItems = null,
             totalPrice = null,
             payWith = null
         )
@@ -58,7 +58,7 @@ internal class OrderDtoTest {
     @Test
     fun orderDtoCheckEmpty() {
         val orderDto = OrderDto(
-            menus = listOf(OrderDto.Menu(id=1, quantity = 1)),
+            menuItems = listOf(OrderDto.MenuItem(id=1, quantity = 1)),
             totalPrice = 5900,
             payWith = ""
         )
@@ -73,7 +73,7 @@ internal class OrderDtoTest {
     @Test
     fun orderDtoCheckBlank() {
         val orderDto = OrderDto(
-            menus = listOf(OrderDto.Menu(id=1, quantity = 1)),
+            menuItems = listOf(OrderDto.MenuItem(id=1, quantity = 1)),
             totalPrice = 5900,
             payWith = " "
         )
@@ -88,7 +88,7 @@ internal class OrderDtoTest {
     @Test
     fun orderDtoCheckMin() {
         val orderDto = OrderDto(
-            menus = listOf(OrderDto.Menu(id=1, quantity = 1)),
+            menuItems = listOf(OrderDto.MenuItem(id=1, quantity = 1)),
             totalPrice = -1,
             payWith = "credit-card"
         )

@@ -4,7 +4,6 @@ import com.baekseju.howmuch.pos.dto.MenuDto
 import com.baekseju.howmuch.pos.entity.Menu
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
-import org.mapstruct.Mappings
 
 @Mapper(componentModel = "spring")
 interface MenuMapper {

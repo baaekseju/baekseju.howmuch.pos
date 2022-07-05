@@ -76,7 +76,7 @@ internal class OrderServiceTest {
 
         val quantity = 2
         val mockOrderDto = OrderDto(
-            menus = listOf(OrderDto.Menu(id = 1, quantity = quantity)),
+            menuItems = listOf(OrderDto.MenuItem(id = 1, quantity = quantity)),
             totalPrice = 10000,
             payWith = "card"
         )
@@ -86,7 +86,7 @@ internal class OrderServiceTest {
         then(menuOrderMapRepository).should().save(any())
         assertThat(stock - menu.stock!!).isEqualTo(quantity)
         assertThat(orderDto.id).isEqualTo(orderId)
-        assertThat(orderDto.menus).hasSize(1)
+        assertThat(orderDto.menuItems).hasSize(1)
     }
 
     @Test
@@ -105,7 +105,7 @@ internal class OrderServiceTest {
         given(menuRepository.findById(any())).willReturn(Optional.empty())
 
         val mockOrderDto = OrderDto(
-            menus = listOf(OrderDto.Menu(id = 1, quantity = 1)),
+            menuItems = listOf(OrderDto.MenuItem(id = 1, quantity = 1)),
             totalPrice = 10000,
             payWith = "card"
         )
@@ -141,7 +141,7 @@ internal class OrderServiceTest {
         )
 
         val mockOrderDto = OrderDto(
-            menus = listOf(OrderDto.Menu(id = 1, quantity = 2)),
+            menuItems = listOf(OrderDto.MenuItem(id = 1, quantity = 2)),
             totalPrice = 10000,
             payWith = "card"
         )

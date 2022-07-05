@@ -3,7 +3,6 @@ package com.baekseju.howmuch.pos.controller
 import com.baekseju.howmuch.pos.dto.OrderDto
 import com.baekseju.howmuch.pos.exception.StockNotEnoughException
 import com.baekseju.howmuch.pos.service.OrderService
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
@@ -57,7 +56,7 @@ internal class OrderControllerTest {
             val orderDto: OrderDto = it.getArgument(0)
             OrderDto(
                 id = orderId,
-                menus = orderDto.menus,
+                menuItems = orderDto.menuItems,
                 totalPrice = orderDto.totalPrice,
                 payWith = orderDto.payWith,
                 createdAt = Instant.now(),
@@ -68,7 +67,7 @@ internal class OrderControllerTest {
         mockMvc.perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"menus\": [{\"id\":1, \"quantity\": 1}], \"totalPrice\": 10000, \"payWith\": \"card\"}")
+                .content("{\"menuItems\": [{\"id\":1, \"quantity\": 1}], \"totalPrice\": 10000, \"payWith\": \"card\"}")
         )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
@@ -84,7 +83,7 @@ internal class OrderControllerTest {
         mockMvc.perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"menus\": [{\"id\":1, \"quantity\": 1}], \"payWith\": \"card\"}")
+                .content("{\"menuItems\": [{\"id\":1, \"quantity\": 1}], \"payWith\": \"card\"}")
         )
             .andExpect { result ->
                 assertThat(result.resolvedException)
@@ -105,7 +104,7 @@ internal class OrderControllerTest {
         mockMvc.perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"menus\": [{\"id\":1, \"quantity\": 999}], \"totalPrice\": 10000, \"payWith\": \"card\"}")
+                .content("{\"menuItems\": [{\"id\":1, \"quantity\": 999}], \"totalPrice\": 10000, \"payWith\": \"card\"}")
         )
             .andExpect { result ->
                 assertThat(result.resolvedException)

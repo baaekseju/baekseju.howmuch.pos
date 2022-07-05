@@ -2,8 +2,8 @@ package com.baekseju.howmuch.pos.service
 
 import com.baekseju.howmuch.pos.dto.OrderDto
 import com.baekseju.howmuch.pos.entity.MenuOrderMap
-import com.baekseju.howmuch.pos.entity.Order
 import com.baekseju.howmuch.pos.exception.StockNotEnoughException
+import com.baekseju.howmuch.pos.mapper.MenuOrderMapMapper
 import com.baekseju.howmuch.pos.mapper.OrderMapper
 import com.baekseju.howmuch.pos.repository.MenuOrderMapRepository
 import com.baekseju.howmuch.pos.repository.MenuRepository
@@ -17,19 +17,17 @@ class OrderService(
     val orderRepository: OrderRepository,
     val menuRepository: MenuRepository,
     val menuOrderMapRepository: MenuOrderMapRepository,
-    val orderMapper: OrderMapper
+    val orderMapper: OrderMapper,
+    val menuOrderMapMapper: MenuOrderMapMapper
 ) {
     @Transactional
     fun addOrder(order: OrderDto): OrderDto {
-        val orderEntity = Order(
-            totalPrice = order.totalPrice,
-            payWith = order.payWith
-        )
+        val orderEntity = orderMapper.toEntity(order)
         val savedOrderEntity = orderRepository.save(orderEntity)
 
-        val orderDtoMenuList: MutableList<OrderDto.Menu> = mutableListOf()
+        val menuItems: MutableList<OrderDto.MenuItem> = mutableListOf()
 
-        order.menus?.map { menu ->
+        order.menuItems?.map { menu ->
             val orderedMenu = menuRepository.findById(menu.id!!).orElse(null) ?: throw EntityNotFoundException()
             if (orderedMenu.stock!! < menu.quantity!!) throw StockNotEnoughException()
             orderedMenu.stock = orderedMenu.stock?.minus(menu.quantity)
@@ -39,12 +37,13 @@ class OrderService(
                 quantity = menu.quantity
             )
             val savedMenuOrderMap = menuOrderMapRepository.save(menuOrderMap)
-            orderDtoMenuList.add(orderMapper.toOrderDtoMenu(savedMenuOrderMap))
+            val menuItem = menuOrderMapMapper.toMenuItem(savedMenuOrderMap)
+            menuItems.add(menuItem)
         }
 
         return OrderDto(
             id = savedOrderEntity.id,
-            menus = orderDtoMenuList,
+            menuItems = menuItems,
             totalPrice = savedOrderEntity.totalPrice,
             payWith = savedOrderEntity.payWith
         )
