@@ -10,4 +10,4 @@ spring:
     import: file:./src/main/resources/config/secret.yml
 
 server:
-  port: 8001
+  port: 8000

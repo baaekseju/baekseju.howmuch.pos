@@ -5,9 +5,9 @@ spring:
       hibernate:
         format_sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
   config:
-    import: 'classpath:BOOT-INF/classes/config/nas-secret.yml'
+    import: file:./src/test/resources/config/nas-test-secret.yml
 
 server:
-  port: 8001
+  port: 8000

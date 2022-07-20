@@ -1,4 +1,5 @@
-src/main/resources/config/nasSecret.yml
+nas-secret.yml
+nas-test-secret.yml
 
 HELP.md
 .gradle
