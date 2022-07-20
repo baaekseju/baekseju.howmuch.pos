@@ -6,8 +6,11 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: validate
-  config:
-    import: 'classpath:BOOT-INF/classes/config/nas-secret.yml'
+  datasource:
+    url: ${DB_HOST}
+    username: ${DB_ID}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 server:
   port: 8001
