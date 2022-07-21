@@ -7,8 +7,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 @Configuration
 class WebConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
-        val posClientUrls = arrayOf("http://localhost:3001", "http://127.0.0.1:3001")
-        val posManagerUrls = arrayOf("http://localhost:3002", "http://127.0.0.1:3002")
+        val posClientUrls = arrayOf(
+            "http://localhost:3001",
+            "http://127.0.0.1:3001",
+            "http://192.168.1.18:8003",
+            "https://rodemtree.synology.me:9003"
+        )
+        val posManagerUrls = arrayOf(
+            "http://localhost:3002",
+            "http://127.0.0.1:3002",
+            "http://192.168.1.18:8002",
+            "https://rodemtree.synology.me:9002"
+        )
 
         registry.addMapping("/api/categories/**")
             .allowedOrigins(*posClientUrls, *posManagerUrls)
