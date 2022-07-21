@@ -10,14 +10,14 @@ class WebConfig : WebMvcConfigurer {
         val posClientUrls = arrayOf(
             "http://localhost:3001",
             "http://127.0.0.1:3001",
-            "http://192.168.1.18:8003",
-            "https://rodemtree.synology.me:9003"
+            "http://192.168.1.18:9003",
+            "https://rodemtree.synology.me:8003"
         )
         val posManagerUrls = arrayOf(
             "http://localhost:3002",
             "http://127.0.0.1:3002",
-            "http://192.168.1.18:8002",
-            "https://rodemtree.synology.me:9002"
+            "http://192.168.1.18:9002",
+            "https://rodemtree.synology.me:8002"
         )
 
         registry.addMapping("/api/categories/**")
