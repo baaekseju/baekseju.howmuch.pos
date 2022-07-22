@@ -1,7 +1,5 @@
 nas-test-secret.yml
 
-testcommit
-
 HELP.md
 .gradle
 build/
@@ -46,5 +44,3 @@ out/
 application-local.yml
 application-test.yml
 secret.yml
-nasSecret.yml
-application-nas.yml
